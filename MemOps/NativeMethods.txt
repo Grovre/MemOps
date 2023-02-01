@@ -1,0 +1,3 @@
+﻿ReadProcessMemory
+WriteProcessMemory
+OpenProcess
