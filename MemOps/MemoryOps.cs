@@ -8,7 +8,7 @@ namespace MemOps;
 
 public static unsafe class MemoryOps
 {
-    public static ref T Read<T>(SafeHandle handle, void* baseAddress, out T bufferStruct)
+    public static void Read<T>(SafeHandle handle, void* baseAddress, out T bufferStruct)
         where T: struct
     {
         handle.IsMemoryValid();
@@ -21,7 +21,6 @@ public static unsafe class MemoryOps
             Debug.Assert(result);
         }
         Console.WriteLine($"Read {readBytes} bytes at 0x{((nint)baseAddress):X}");
-        return ref bufferStruct;
     }
 
     public static void Write<T>(SafeHandle handle, void* baseAddress, ref T bufferStruct)
