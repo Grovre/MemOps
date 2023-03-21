@@ -3,7 +3,8 @@
 using System.Diagnostics;
 using System.Globalization;
 using System.Runtime.InteropServices;
-using MemOps;
+using MemOps.Enums;
+using MemOps.Ops;
 
 namespace Console;
 

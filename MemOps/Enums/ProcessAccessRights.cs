@@ -1,6 +1,7 @@
-﻿namespace MemOps;
+﻿namespace MemOps.Enums;
 
 [Flags]
+// ReSharper disable once InconsistentNaming
 public enum ProcessAccessRights
 {
     ProcessTerminate = 0x00000001,
@@ -24,12 +25,4 @@ public enum ProcessAccessRights
     ProcessWriteOwner = 0x00080000,
     ProcessSynchronize = 0x00100000,
     ProcessStandardRightsRequired = 0x000F0000,
-}
-
-public static class ProcessAccessRightsExtensions
-{
-    public static bool HasFlagFast(this ProcessAccessRights value, ProcessAccessRights flag)
-    {
-        return (value & flag) != 0;
-    }
 }

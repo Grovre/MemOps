@@ -5,8 +5,9 @@ using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Windows.Win32;
+using MemOps.Exceptions;
 
-namespace MemOps;
+namespace MemOps.Ops;
 
 public static unsafe class MemoryOps
 {

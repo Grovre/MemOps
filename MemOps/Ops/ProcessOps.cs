@@ -4,10 +4,12 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Windows.Win32;
 using Windows.Win32.System.Threading;
+using MemOps.Enums;
 
-namespace MemOps;
+namespace MemOps.Ops;
 
-public static class ProcessOps
+// ReSharper disable once InconsistentNaming
+public static class ProcessOps // Somehow this is inconsistent naming
 {
     public static SafeHandle OpenProcessSafeHandle(uint processId, params ProcessAccessRights[] rights)
     {

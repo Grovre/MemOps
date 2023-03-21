@@ -1,8 +1,9 @@
 ﻿using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 
-namespace MemOps;
+namespace MemOps.Exceptions;
 
+[Serializable]
 public sealed class MemoryException : ExternalException
 {
     public static MemoryException FromMostRecentPInvokeError()
@@ -12,7 +13,7 @@ public sealed class MemoryException : ExternalException
     {
     }
 
-    public MemoryException(SerializationInfo info, StreamingContext context) : base(info, context)
+    private MemoryException(SerializationInfo info, StreamingContext context) : base(info, context)
     {
     }
 
