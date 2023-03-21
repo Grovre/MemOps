@@ -10,16 +10,7 @@ public static class ProcessOps
     public static SafeHandle OpenProcessSafeHandle(uint processId, params ProcessAccessRights[] rights)
     {
         var finalRights = (PROCESS_ACCESS_RIGHTS)rights.Aggregate((ar1, ar2) => ar1 | ar2);
-        return PInvoke.OpenProcess_SafeHandle
-            (finalRights, false, processId);
-
-#if DEBUG
-        Console.WriteLine("Opened process with the following rights: ");
-        var pars = Enum
-            .GetValues<ProcessAccessRights>()
-            .Where(v => ((ProcessAccessRights)finalRights).HasFlagFast(v));
-        Console.WriteLine(string.Join(", ", pars));
-#endif
+        return PInvoke.OpenProcess_SafeHandle(finalRights, false, processId);
     }
 
     public static SafeHandle OpenProcessSafeHandle(this Process proc, params ProcessAccessRights[] rights)
