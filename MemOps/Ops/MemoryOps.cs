@@ -33,7 +33,7 @@ public static unsafe class MemoryOps
             Console.WriteLine($"Read {byteReadCount} bytes at 0x{((nint)baseAddress):X}");
     }
 
-    public static void ReadCycle<T>(SafeHandle handle, void* baseAddress, ref T bufferStruct, ReaderWriterLockSlim rwLock, TimeSpan delayBetweenReads, CancellationToken? cancelToken, bool writeOnRead = false)
+    public static void ReadCycle<T>(SafeHandle handle, void* baseAddress, ref T bufferStruct, TimeSpan delayBetweenReads, ReaderWriterLockSlim? rwLock = null, CancellationToken? cancelToken = null, bool writeOnRead = false)
         where T : struct
     {
         if (delayBetweenReads <= TimeSpan.Zero)
@@ -51,9 +51,9 @@ public static unsafe class MemoryOps
             // https://learn.microsoft.com/en-us/windows/win32/debug/system-error-codes--0-499-
             Read(handle, baseAddress, out T internalBuffer, writeOnRead);
 
-            rwLock.EnterWriteLock(); // TODO: Use try method for clarity to misusers
+            rwLock?.EnterWriteLock(); // TODO: Use try method for clarity to misusers
             bufferStruct = internalBuffer; // Do not inline Read, make lock as fast as possible
-            rwLock.ExitWriteLock();
+            rwLock?.ExitWriteLock();
         }
     }
 

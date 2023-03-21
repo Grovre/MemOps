@@ -24,7 +24,6 @@ public static unsafe class Program
         
         System.Console.WriteLine("Enter hex address to read: ");
         nint.TryParse(System.Console.ReadLine()!.TrimStart('0', 'x', 'X'), NumberStyles.HexNumber, null, out var address);
-        System.Console.WriteLine(address);
 
         // ReadOnce(handle, address);
         ReadCycle(handle, address);
@@ -44,18 +43,17 @@ public static unsafe class Program
                 handle, 
                 address.ToPointer(), 
                 ref n, 
-                rwLock, 
-                TimeSpan.FromSeconds(0.75), 
-                null,
-                true))
+                TimeSpan.FromMilliseconds(10),
+                rwLock))
             .Start();
 
         while (true)
         {
-            Thread.Sleep(500);
+            Thread.Sleep(10);
             rwLock.EnterReadLock();
-            System.Console.WriteLine(n);
+            var v = n; // Fastest read op to release asap
             rwLock.ExitReadLock();
+            System.Console.WriteLine(v);
         }
     }
 }
