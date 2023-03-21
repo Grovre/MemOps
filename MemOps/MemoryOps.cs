@@ -2,7 +2,6 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Windows.Win32;
-using Windows.Win32.Foundation;
 
 namespace MemOps;
 
@@ -18,7 +17,7 @@ public static unsafe class MemoryOps
         fixed (void* bufPtr = &bufferStruct)
         {
             var result = PInvoke.ReadProcessMemory(handle, baseAddress, bufPtr, sz, &readBytes);
-            Debug.Assert(result);
+            Debug.Assert(result, $"ReadProcessMemory failed with error {Marshal.GetLastPInvokeError()}");
         }
         Console.WriteLine($"Read {readBytes} bytes at 0x{((nint)baseAddress):X}");
     }
@@ -32,7 +31,7 @@ public static unsafe class MemoryOps
         fixed (void* bufPtr = &bufferStruct)
         {
             var result = PInvoke.WriteProcessMemory(handle, baseAddress, bufPtr, sz, &writtenBytes);
-            Debug.Assert(result);
+            Debug.Assert(result, $"WriteProcessMemory failed with error {Marshal.GetLastPInvokeError()}");
         }
         Console.WriteLine($"Wrote {writtenBytes} bytes at 0x{((nint)baseAddress):X}");
     }
