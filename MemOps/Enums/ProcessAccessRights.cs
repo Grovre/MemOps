@@ -1,28 +1,32 @@
-﻿namespace MemOps.Enums;
+﻿using Windows.Win32.System.Threading;
+
+using PAR = Windows.Win32.System.Threading.PROCESS_ACCESS_RIGHTS;
+
+namespace MemOps.Enums;
 
 [Flags]
 // ReSharper disable once InconsistentNaming
-public enum ProcessAccessRights
+public enum ProcessAccessRights : uint
 {
-    ProcessTerminate = 0x00000001,
-    ProcessCreateThread = 0x00000002,
-    ProcessSetSessionId = 0x00000004,
-    ProcessVmOperation = 0x00000008,
-    ProcessVmRead = 0x00000010,
-    ProcessVmWrite = 0x00000020,
-    ProcessDupHandle = 0x00000040,
-    ProcessCreateProcess = 0x00000080,
-    ProcessSetQuota = 0x00000100,
-    ProcessSetInformation = 0x00000200,
-    ProcessQueryInformation = 0x00000400,
-    ProcessSuspendResume = 0x00000800,
-    ProcessQueryLimitedInformation = 0x00001000,
-    ProcessSetLimitedInformation = 0x00002000,
-    ProcessAllAccess = 0x001FFFFF,
-    ProcessDelete = 0x00010000,
-    ProcessReadControl = 0x00020000,
-    ProcessWriteDac = 0x00040000,
-    ProcessWriteOwner = 0x00080000,
-    ProcessSynchronize = 0x00100000,
-    ProcessStandardRightsRequired = 0x000F0000,
+    ProcessTerminate = PAR.PROCESS_TERMINATE,
+    ProcessCreateThread = PAR.PROCESS_CREATE_THREAD,
+    ProcessSetSessionId = PAR.PROCESS_SET_SESSIONID,
+    ProcessVmOperation = PAR.PROCESS_VM_OPERATION,
+    ProcessVmRead = PAR.PROCESS_VM_READ,
+    ProcessVmWrite = PAR.PROCESS_VM_WRITE,
+    ProcessDupHandle = PAR.PROCESS_DUP_HANDLE,
+    ProcessCreateProcess = PAR.PROCESS_CREATE_PROCESS,
+    ProcessSetQuota = PAR.PROCESS_SET_QUOTA,
+    ProcessSetInformation = PAR.PROCESS_SET_INFORMATION,
+    ProcessQueryInformation = PAR.PROCESS_QUERY_INFORMATION,
+    ProcessSuspendResume = PAR.PROCESS_SUSPEND_RESUME,
+    ProcessQueryLimitedInformation = PAR.PROCESS_QUERY_LIMITED_INFORMATION,
+    ProcessSetLimitedInformation = PAR.PROCESS_SET_LIMITED_INFORMATION,
+    ProcessAllAccess = PAR.PROCESS_ALL_ACCESS,
+    ProcessDelete = PAR.PROCESS_DELETE,
+    ProcessReadControl = PAR.PROCESS_READ_CONTROL,
+    ProcessWriteDac = PAR.PROCESS_WRITE_DAC,
+    ProcessWriteOwner = PAR.PROCESS_WRITE_OWNER,
+    ProcessSynchronize = PAR.PROCESS_SYNCHRONIZE,
+    ProcessStandardRightsRequired = PAR.PROCESS_STANDARD_RIGHTS_REQUIRED,
 }

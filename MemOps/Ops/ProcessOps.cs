@@ -11,15 +11,9 @@ namespace MemOps.Ops;
 // ReSharper disable once InconsistentNaming
 public static class ProcessOps // Somehow this is inconsistent naming
 {
-    public static SafeHandle OpenProcessSafeHandle(uint processId, params ProcessAccessRights[] rights)
-    {
-        var finalRights = (PROCESS_ACCESS_RIGHTS)rights.Aggregate((ar1, ar2) => ar1 | ar2);
-        return PInvoke.OpenProcess_SafeHandle(finalRights, false, processId);
-    }
+    public static SafeHandle OpenProcessSafeHandle(uint processId, ProcessAccessRights combinedRights)
+        => PInvoke.OpenProcess_SafeHandle((PROCESS_ACCESS_RIGHTS)combinedRights, false, processId);
 
-    public static SafeHandle OpenProcessSafeHandle(this Process proc, params ProcessAccessRights[] rights)
-    {
-        return OpenProcessSafeHandle((uint)proc.Id, rights);
-    }
+    public static SafeHandle OpenProcessSafeHandle(this Process proc, ProcessAccessRights combinedRights)
+        => OpenProcessSafeHandle((uint)proc.Id, combinedRights);
 }
-

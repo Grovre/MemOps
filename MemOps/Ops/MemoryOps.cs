@@ -79,6 +79,7 @@ public static unsafe class MemoryOps
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [Conditional("DEBUG")]
     internal static void IsMemoryValid(this SafeHandle handle)
     {
         Debug.Assert(handle != null);

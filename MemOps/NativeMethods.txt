@@ -1,3 +1,4 @@
 ﻿ReadProcessMemory
 WriteProcessMemory
 OpenProcess
+CloseHandle
