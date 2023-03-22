@@ -28,7 +28,6 @@ public sealed unsafe class BufferedMemoryAddress<T> : ICloneable
     /// A buffer used for the memory operations.
     /// Read ops write to this, and write ops read from this.
     /// </summary>
-    /// TODO: Add buffer bypass methods to avoid heap writes
     public T Buffer
     {
         get => _buf;
@@ -58,6 +57,16 @@ public sealed unsafe class BufferedMemoryAddress<T> : ICloneable
     }
 
     /// <summary>
+    /// Reads the address. Results bypass this object's buffer and
+    /// are stored in the referenced buffer.
+    /// </summary>
+    /// <param name="buffer">The buffer to write to</param>
+    public void Read(out T buffer)
+    {
+        MemoryOps.Read(_handle, _address, out buffer, PrintOnReadOrWrite);
+    }
+
+    /// <summary>
     /// Continuously reads the address in a cycle. Results are stored in the buffer.
     /// Supports locking buffer I/O using a ReaderWriterLockSlim and finishing
     /// with a cancellation token, but these are optional.
@@ -72,6 +81,24 @@ public sealed unsafe class BufferedMemoryAddress<T> : ICloneable
     {
         MemoryOps.ReadCycle(_handle, _address, ref _buf, delayBetweenReads, rwLock, cancelToken, PrintOnReadOrWrite);
     }
+    
+    /// <summary>
+    /// Continuously reads the address in a cycle. Results bypass this object's buffer
+    /// and go to the reference buffer given instead. Supports locking buffer I/O
+    /// using a ReaderWriterLockSlim and finishing with a cancellation token,
+    /// but these are optional.
+    ///
+    /// If there is no lock, it will write straight to the buffer.
+    /// If there is no cancel token, the thread will never exit the method
+    /// </summary>
+    /// <param name="buffer">The buffer reads are copied to</param>
+    /// <param name="delayBetweenReads">The time a thread sleeps between reads</param>
+    /// <param name="rwLock">Used for locking the buffer I/O</param>
+    /// <param name="cancelToken">Exits the thread when flagged</param>
+    public void StartReadCycle(ref T buffer, TimeSpan delayBetweenReads, ReaderWriterLockSlim? rwLock, CancellationToken? cancelToken)
+    {
+        MemoryOps.ReadCycle(_handle, _address, ref buffer, delayBetweenReads, rwLock, cancelToken, PrintOnReadOrWrite);
+    }
 
     /// <summary>
     /// Writes to the address. The buffer is copied to the address
@@ -79,6 +106,16 @@ public sealed unsafe class BufferedMemoryAddress<T> : ICloneable
     public void Write()
     {
         MemoryOps.Write(_handle, _address, ref _buf, PrintOnReadOrWrite);
+    }
+    
+    /// <summary>
+    /// Writes to the address. Reads bypass this object's buffer and
+    /// instead go to the referenced buffer.
+    /// </summary>
+    /// <param name="buffer">The buffer to read from</param>
+    public void Write(ref T buffer)
+    {
+        MemoryOps.Write(_handle, _address, ref buffer, PrintOnReadOrWrite);
     }
 
     /// <summary>
