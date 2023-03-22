@@ -2,8 +2,9 @@
 
 using System.Diagnostics;
 using System.Globalization;
-using System.Runtime.InteropServices;
+using MemOps.DataStructures;
 using MemOps.Enums;
+using MemOps.Extensions;
 using MemOps.Ops;
 
 namespace Console;
@@ -12,48 +13,56 @@ public static unsafe class Program
 {
     public static void Main()
     {
-        var procNamesAndIds = Process.GetProcesses()
-            .Select(p => $"{p.ProcessName} PID: {p.Id}")
-            .Order();
-        System.Console.WriteLine($"Process names and PIDs:\n{string.Join('\n', procNamesAndIds)}");
-        
-        System.Console.WriteLine("Enter PID: ");
-        int.TryParse(System.Console.ReadLine(), NumberStyles.Number, null, out var pid);
-        var proc = Process.GetProcessById(pid);
-        using var handle = ProcessOps.OpenProcessSafeHandle(proc, ProcessAccessRights.ProcessAllAccess);
-        
-        System.Console.WriteLine("Enter hex address to read: ");
-        nint.TryParse(System.Console.ReadLine()!.TrimStart('0', 'x', 'X'), NumberStyles.HexNumber, null, out var address);
-
-        // ReadOnce(handle, address);
-        ReadCycle(handle, address);
-    }
-
-    static void ReadOnce(SafeHandle handle, nint address)
-    {
-        MemoryOps.Read(handle, address.ToPointer(), out int n, true);
-        System.Console.WriteLine(n);
-    }
-
-    static void ReadCycle(SafeHandle handle, nint address)
-    {
-        int n = default;
-        var rwLock = new ReaderWriterLockSlim();
-        new Thread(() => MemoryOps.ReadCycle(
-                handle, 
-                address.ToPointer(), 
-                ref n, 
-                TimeSpan.FromMilliseconds(10),
-                rwLock))
-            .Start();
-
-        while (true)
+        PrintProcessesAndNamesAlphabetical();
+        var proc = ReadProcess();
+        var handleRights = new[]
         {
-            Thread.Sleep(10);
+            ProcessAccessRights.ProcessVmOperation,
+            ProcessAccessRights.ProcessVmRead,
+            ProcessAccessRights.ProcessVmWrite
+        }.CombineRights();
+        var handle = proc.OpenProcessSafeHandle(handleRights);
+        var address = ReadAddress();
+
+        var memWorker = new MemoryAddress<int>(handle, address, false);
+        var rwLock = new ReaderWriterLockSlim();
+        var cancelToken = new CancellationTokenSource();
+        var t = Task.Run(() => memWorker.StartReadCycle(TimeSpan.FromSeconds(0.1), rwLock, cancelToken.Token));
+        for (var i = 0; i < 100; i++)
+        {
+            Thread.Sleep(TimeSpan.FromSeconds(0.1));
             rwLock.EnterReadLock();
-            var v = n; // Fastest read op to release asap
+            var v = memWorker.Buffer;
             rwLock.ExitReadLock();
             System.Console.WriteLine(v);
         }
+        
+        cancelToken.Cancel();
+        System.Console.WriteLine("Token flagged");
+        t.Wait();
+    }
+
+    static void PrintProcessesAndNamesAlphabetical()
+    {
+        System.Console.WriteLine("Process name: ID");
+        System.Console.WriteLine(string.Join('\n', Process.GetProcesses()
+            .Select(p => $"{p.ProcessName}: {p.Id}")
+            .Order()));
+    }
+
+    static Process ReadProcess()
+    {
+        System.Console.WriteLine("Enter PID: ");
+        var n = int.Parse(System.Console.ReadLine()!);
+        return Process.GetProcessById(n);
+    }
+
+    static nint ReadAddress()
+    {
+        System.Console.WriteLine("Enter hex address: ");
+        return nint.Parse(
+            System.Console.ReadLine()!.TrimStart('0', 'x', 'X'),
+            NumberStyles.HexNumber,
+            null); 
     }
 }
