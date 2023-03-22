@@ -58,7 +58,9 @@ public static unsafe class MemoryOps
             // https://learn.microsoft.com/en-us/windows/win32/debug/system-error-codes--0-499-
             Read(handle, baseAddress, out T internalBuffer, writeOnRead);
 
-            rwLock?.EnterWriteLock(); // TODO: Use try method for clarity to misusers
+            var entered = rwLock?.TryEnterWriteLock(TimeSpan.FromSeconds(10));
+            if (entered.HasValue && !entered.Value)
+                throw new ArgumentException("Timed out after 10 seconds trying to enter write lock");
             bufferStruct = internalBuffer; // Do not inline Read, make lock as fast as possible
             rwLock?.ExitWriteLock();
         }
