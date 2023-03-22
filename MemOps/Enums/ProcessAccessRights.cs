@@ -2,6 +2,10 @@
 
 namespace MemOps.Enums;
 
+/// <summary>
+/// Forwarded Win32 process access rights exposed publicly.
+/// All flags represent the same value as Win32 access right flags.
+/// </summary>
 [Flags]
 // ReSharper disable once InconsistentNaming
 public enum ProcessAccessRights : uint

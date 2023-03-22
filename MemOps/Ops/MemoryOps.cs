@@ -9,6 +9,10 @@ using MemOps.Exceptions;
 
 namespace MemOps.Ops;
 
+/// <summary>
+/// Static class providing access to external Win32 calls.
+/// It is strongly recommended to use BufferedMemoryAddress.
+/// </summary>
 public static unsafe class MemoryOps
 {
     public static void Read<T>(SafeHandle handle, void* baseAddress, out T bufferStruct, bool printOnRead = false)

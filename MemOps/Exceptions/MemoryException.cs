@@ -3,9 +3,16 @@ using System.Runtime.Serialization;
 
 namespace MemOps.Exceptions;
 
+/// <summary>
+/// Exceptions relating to memory I/O using external Win32 memory I/O calls
+/// </summary>
 [Serializable]
 public sealed class MemoryException : ExternalException
 {
+    /// <summary>
+    /// Creates a MemoryException based off of the last PInvoke errors
+    /// </summary>
+    /// <returns>MemoryException using last PInvoke errors</returns>
     public static MemoryException FromMostRecentPInvokeError()
         => new(Marshal.GetLastPInvokeErrorMessage(), Marshal.GetLastPInvokeError());
 
@@ -13,6 +20,7 @@ public sealed class MemoryException : ExternalException
     {
     }
 
+    // SonarLint said make private, so made private
     private MemoryException(SerializationInfo info, StreamingContext context) : base(info, context)
     {
     }
