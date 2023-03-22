@@ -2,6 +2,7 @@
 
 using System.Diagnostics;
 using System.Globalization;
+using System.Runtime.InteropServices;
 using MemOps.DataStructures;
 using MemOps.Enums;
 using MemOps.Extensions;
@@ -9,7 +10,7 @@ using MemOps.Ops;
 
 namespace Console;
 
-public static unsafe class Program
+public static class Program
 {
     public static void Main()
     {
@@ -17,24 +18,20 @@ public static unsafe class Program
         var proc = ReadProcess();
         var handleRights = new[]
         {
-            ProcessAccessRights.ProcessVmOperation,
             ProcessAccessRights.ProcessVmRead,
-            ProcessAccessRights.ProcessVmWrite
         }.CombineRights();
         var handle = proc.OpenProcessSafeHandle(handleRights);
         var address = ReadAddress();
 
-        var memWorker = new MemoryAddress<int>(handle, address, false);
-        var rwLock = new ReaderWriterLockSlim();
+        var memWorker = new BufferedMemoryAddress<int>(handle, address, false);
         var cancelToken = new CancellationTokenSource();
-        var t = Task.Run(() => memWorker.StartReadCycle(TimeSpan.FromSeconds(0.1), rwLock, cancelToken.Token));
+        var t = Task.Run(() => memWorker.StartReadCycle(TimeSpan.FromSeconds(0.1), null, cancelToken.Token));
         for (var i = 0; i < 100; i++)
         {
             Thread.Sleep(TimeSpan.FromSeconds(0.1));
-            rwLock.EnterReadLock();
             var v = memWorker.Buffer;
-            rwLock.ExitReadLock();
             System.Console.WriteLine(v);
+            System.Console.WriteLine($"Bytes: {string.Join(", ", MemoryMarshal.AsBytes(MemoryMarshal.CreateReadOnlySpan(ref v, 1)).ToArray())}");
         }
         
         cancelToken.Cancel();

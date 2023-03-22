@@ -1,6 +1,4 @@
-﻿using Windows.Win32.System.Threading;
-
-using PAR = Windows.Win32.System.Threading.PROCESS_ACCESS_RIGHTS;
+﻿using PAR = Windows.Win32.System.Threading.PROCESS_ACCESS_RIGHTS;
 
 namespace MemOps.Enums;
 
