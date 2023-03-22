@@ -16,4 +16,15 @@ public static class ProcessOps // Somehow this is inconsistent naming
 
     public static SafeHandle OpenProcessSafeHandle(this Process proc, ProcessAccessRights combinedRights)
         => OpenProcessSafeHandle((uint)proc.Id, combinedRights);
+
+    public static ProcessModule? SearchModuleByFileNameIgnoreCase(this Process process, string moduleName)
+    {
+        return process
+            .Modules
+            .Cast<ProcessModule>()
+            .FirstOrDefault(mod => string.Equals(
+                mod.ModuleName, 
+                moduleName,
+                StringComparison.OrdinalIgnoreCase));
+    }
 }

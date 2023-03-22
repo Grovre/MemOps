@@ -2,10 +2,8 @@
 
 using System.Diagnostics;
 using System.Globalization;
-using System.Runtime.InteropServices;
 using MemOps.DataStructures;
 using MemOps.Enums;
-using MemOps.Extensions;
 using MemOps.Ops;
 
 namespace Console;
@@ -15,8 +13,24 @@ public static class Program
     private const int Pid = 18600;
     private const nint BaseAddress = 0x4B4C9A00;
     private static readonly nint[] OffsetsFromBaseAddress = { 0x60, 0x1F0, 0x88, 0x38, 0x1A8, 0x158, 0x330 };
-    
+
     public static void Main()
+    {
+        var p = Process.GetProcessesByName("jetbrains-toolbox")[0];
+        var m = p.SearchModuleByFileNameIgnoreCase("zip.dll");
+        if (m == null)
+        {
+            System.Console.WriteLine("No module by that name");
+            return;
+        } 
+        
+        System.Console.WriteLine($"Module file name: {m.FileName}");
+        System.Console.WriteLine($"Module mod name: {m.ModuleName}");
+        System.Console.WriteLine($"Base address: 0x{m.BaseAddress:X}");
+        System.Console.WriteLine($"Entry address: 0x{m.EntryPointAddress:X}");
+    }
+    
+    public static void Main_o()
     {
         var proc = Process.GetProcessById(Pid);
         using var handle = proc.OpenProcessSafeHandle(ProcessAccessRights.ProcessAllAccess);
