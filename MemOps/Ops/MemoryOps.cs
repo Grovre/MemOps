@@ -33,6 +33,13 @@ public static unsafe class MemoryOps
             Console.WriteLine($"Read {byteReadCount} bytes at 0x{((nint)baseAddress):X}");
     }
 
+    public static T Read<T>(SafeHandle handle, void* baseAddress, bool printOnRead = false)
+        where T : struct
+    {
+        Read(handle, baseAddress, out T buf, printOnRead);
+        return buf;
+    }
+
     public static void ReadCycle<T>(SafeHandle handle, void* baseAddress, ref T bufferStruct, TimeSpan delayBetweenReads, ReaderWriterLockSlim? rwLock = null, CancellationToken? cancelToken = null, bool writeOnRead = false)
         where T : struct
     {
@@ -76,6 +83,30 @@ public static unsafe class MemoryOps
         
         if (printOnWrite)
             Console.WriteLine($"Wrote {byteWriteCount} bytes at 0x{((nint)baseAddress):X}");
+    }
+
+    public static nint FollowOffsets(SafeHandle handle, nint baseAddress, params nint[] offsets)
+    {
+        if (offsets.Length <= 0)
+            return baseAddress;
+        if (offsets.Length == 1)
+            return baseAddress + offsets[0];
+        
+        /*
+        for (var i = 0; i < offsets.Length - 1; i++)
+        {
+            baseAddress += offsets[i];
+            Read(handle, baseAddress.ToPointer(), out baseAddress);
+        }
+
+        return baseAddress + offsets[^1];
+        */
+
+        return offsets
+                .SkipLast(1)
+                .Aggregate(baseAddress, (address, offset)
+                    => Read<nint>(handle, (address + offset).ToPointer())) 
+               + offsets[^1];
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

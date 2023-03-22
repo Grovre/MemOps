@@ -9,7 +9,7 @@ public unsafe class BufferedMemoryAddress<T> : ICloneable
     private readonly SafeHandle _handle;
     public bool PrintOnReadOrWrite { get; set; }
     private readonly void* _address;
-    private T _buf;
+    private T _buf; // Required for ref MemoryOp arguments, ignore SonarLint
 
     public nint Address => (nint)_address;
 

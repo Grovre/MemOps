@@ -12,31 +12,19 @@ namespace Console;
 
 public static class Program
 {
+    private const int Pid = 18600;
+    private const nint BaseAddress = 0x4B4C9A00;
+    private static readonly nint[] OffsetsFromBaseAddress = { 0x60, 0x1F0, 0x88, 0x38, 0x1A8, 0x158, 0x330 };
+    
     public static void Main()
     {
-        PrintProcessesAndNamesAlphabetical();
-        var proc = ReadProcess();
-        var handleRights = new[]
-        {
-            ProcessAccessRights.ProcessVmRead,
-        }.CombineRights();
-        var handle = proc.OpenProcessSafeHandle(handleRights);
-        var address = ReadAddress();
+        var proc = Process.GetProcessById(Pid);
+        using var handle = proc.OpenProcessSafeHandle(ProcessAccessRights.ProcessAllAccess);
+        var address = MemoryOps.FollowOffsets(handle, BaseAddress, OffsetsFromBaseAddress);
 
         var memWorker = new BufferedMemoryAddress<int>(handle, address, false);
-        var cancelToken = new CancellationTokenSource();
-        var t = Task.Run(() => memWorker.StartReadCycle(TimeSpan.FromSeconds(0.1), null, cancelToken.Token));
-        for (var i = 0; i < 100; i++)
-        {
-            Thread.Sleep(TimeSpan.FromSeconds(0.1));
-            var v = memWorker.Buffer;
-            System.Console.WriteLine(v);
-            System.Console.WriteLine($"Bytes: {string.Join(", ", MemoryMarshal.AsBytes(MemoryMarshal.CreateReadOnlySpan(ref v, 1)).ToArray())}");
-        }
-        
-        cancelToken.Cancel();
-        System.Console.WriteLine("Token flagged");
-        t.Wait();
+        memWorker.Read();
+        System.Console.WriteLine(memWorker.Buffer);
     }
 
     static void PrintProcessesAndNamesAlphabetical()
@@ -45,6 +33,7 @@ public static class Program
         System.Console.WriteLine(string.Join('\n', Process.GetProcesses()
             .Select(p => $"{p.ProcessName}: {p.Id}")
             .Order()));
+        System.Console.WriteLine();
     }
 
     static Process ReadProcess()
