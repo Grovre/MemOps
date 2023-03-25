@@ -28,7 +28,7 @@ public sealed unsafe class BufferedMemoryAddress<T> : ICloneable
     /// A buffer used for the memory operations.
     /// Read ops write to this, and write ops read from this.
     /// </summary>
-    public T Buffer
+    public T Buffer // Required for ref MemoryOp arguments, ignore SonarLint
     {
         get => _buf;
         set => _buf = value;
@@ -58,7 +58,8 @@ public sealed unsafe class BufferedMemoryAddress<T> : ICloneable
 
     /// <summary>
     /// Reads the address. Results bypass this object's buffer and
-    /// are stored in the referenced buffer.
+    /// are stored in the referenced buffer. This can result in
+    /// performance benefits by avoiding writing to the heap.
     /// </summary>
     /// <param name="buffer">The buffer to write to</param>
     public void Read(out T buffer)
@@ -110,7 +111,8 @@ public sealed unsafe class BufferedMemoryAddress<T> : ICloneable
     
     /// <summary>
     /// Writes to the address. Reads bypass this object's buffer and
-    /// instead go to the referenced buffer.
+    /// instead go to the referenced buffer. This can result in
+    /// performance benefits by avoiding reading from the heap.
     /// </summary>
     /// <param name="buffer">The buffer to read from</param>
     public void Write(ref T buffer)
@@ -128,5 +130,85 @@ public sealed unsafe class BufferedMemoryAddress<T> : ICloneable
         var memAddr = new BufferedMemoryAddress<T>(_handle, Address, PrintOnReadOrWrite);
         memAddr.Buffer = _buf;
         return memAddr;
+    }
+    
+    /// <summary>
+    /// The builder class for BufferedMemoryAddress. This class can provides
+    /// methods to shorten code and boilerplate by letting users avoid
+    /// repeating entire constructor parameters for BufferedMemoryAddress.
+    /// </summary>
+    public class Builder : ICloneable
+    {
+        public nint Address { get; set; }
+        public bool PrintOnReadOrWrite { get; set; }
+        public T Buffer { get; set; }
+        public SafeHandle Handle { get; set; }
+
+        /// <summary>
+        /// Creates the builder. A handle is required because
+        /// all memory operations require a handle
+        /// </summary>
+        /// <param name="handle">Valid handle used for memory I/O</param>
+        public Builder(SafeHandle handle)
+        {
+            Handle = handle;
+        }
+
+        #region Setters
+
+        public Builder SetAddress(nint address)
+        {
+            Address = address;
+            return this;
+        }
+
+        public Builder SetPrintOnReadOrWrite(bool printOnReadOrWrite)
+        {
+            PrintOnReadOrWrite = printOnReadOrWrite;
+            return this;
+        }
+
+        public Builder SetBuffer(T buffer)
+        {
+            Buffer = buffer;
+            return this;
+        }
+
+        public Builder SetHandle(SafeHandle handle)
+        {
+            Handle = handle;
+            return this;
+        }
+        
+        #endregion
+
+        /// <summary>
+        /// Creates a BufferedMemoryAddress for use by the building user
+        /// </summary>
+        /// <returns>A BufferedMemoryAddress using the builder's provided fields</returns>
+        public BufferedMemoryAddress<T> Build()
+        {
+            return new BufferedMemoryAddress<T>(Handle, Address, PrintOnReadOrWrite)
+            {
+                _buf = Buffer
+            };
+        }
+
+        /// <inheritdoc cref="Clone"/>
+        public Builder CloneT()
+            => new Builder(Handle)
+            {
+                Address = this.Address,
+                PrintOnReadOrWrite = this.PrintOnReadOrWrite,
+                Buffer = this.Buffer
+            };
+
+        public object Clone()
+            => new Builder(Handle)
+            {
+                Address = this.Address,
+                PrintOnReadOrWrite = this.PrintOnReadOrWrite,
+                Buffer = this.Buffer
+            };
     }
 }
