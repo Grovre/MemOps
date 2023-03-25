@@ -9,7 +9,5 @@ public class AssaultCube
     public static nint[] FromEntityAddressToNameOffsets = new nint[] { 0x205 };
     public static nint[] FromEntityAddressToRifleAmmoOffsets = new nint[] { 0x140 };
     public static nint[] FromEntityAddressToHeadXPosOffsets = new nint[] { 0x4 };
-    public static nint[] FromEntityAddressToHeadYPosOffsets = new nint[] { 0xC };
-    public static nint[] FromEntityAddressToHeadZPosOffsets = new nint[] { 0x8 };
-    public static nint[] FromEntityAddressToFeetZPosOffsets = new nint[] { 0x2C };
+    public static nint[] FromEntityAddressToFeetXPosOffsets = new nint[] { 0x28 };
 }
