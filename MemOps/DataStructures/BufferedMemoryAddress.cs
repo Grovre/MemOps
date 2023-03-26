@@ -121,6 +121,34 @@ public sealed unsafe class BufferedMemoryAddress<T> : ICloneable
     }
 
     /// <summary>
+    /// Provides a shorthand for reading, doing something, then writing a value
+    /// by reading a value, invoking the mutator function on it, and writing
+    /// what was returned by the mutator.
+    /// </summary>
+    /// <param name="mutator">The function to mutate the value with</param>
+    /// <param name="mutateOnBuffer">Whether or not to read to the buffer. False is recommended</param>
+    public void MutateValue(Func<T, T> mutator, bool mutateOnBuffer = false)
+    {
+        T quickBuffer = default;
+        ref var v = ref quickBuffer;
+        if (mutateOnBuffer)
+            v = ref _buf;
+        
+        mutator(v);
+        Write(ref v);
+    }
+
+    public BufferedMemoryAddress<TNew> WithAddress<TNew>(nint newAddress)
+        where TNew : struct
+        => new BufferedMemoryAddress<TNew>(_handle, newAddress, PrintOnReadOrWrite);
+
+    public BufferedMemoryAddress<T> FollowOffsets(params nint[] offsets)
+    {
+        var addr = MemoryOps.FollowOffsets(_handle, Address, offsets);
+        return new BufferedMemoryAddress<T>(_handle, addr, PrintOnReadOrWrite);
+    }
+
+    /// <summary>
     /// Clones everything from this object into a new one, including the buffer.
     /// The same handle will be used.
     /// </summary>
