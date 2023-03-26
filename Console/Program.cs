@@ -6,6 +6,7 @@ using System.Numerics;
 using System.Runtime.InteropServices;
 using MemOps.DataStructures;
 using MemOps.Enums;
+using MemOps.Exceptions;
 using MemOps.Extensions;
 using MemOps.Ops;
 
@@ -46,7 +47,8 @@ public static class Program
         // because when the player is dead, their pointer points to the
         // 4th dimension instead. The health there won't be 0-100.
         // I don't know what it points to but it seems to be
-        // an entity structure template? Also too lazy to wrap this in a loop
+        // an entity structure template or an existing entity?
+        // Also too lazy to wrap this in a loop
         playerHpAddr.Read();
         if (playerHpAddr.Buffer is <= 0 or > 100)
             goto BeforePlayerAddress;
@@ -71,7 +73,7 @@ public static class Program
 
         for (var i = 0; i < 1_000; i++)
         {
-            Thread.Sleep(10);
+            Thread.Sleep(1000);
 
             playerHpAddr.Read(out var hp); // Only this reads here because it must be known and is always right
             var vh = Vector3.Zero;
@@ -91,6 +93,30 @@ public static class Program
 
 
             System.Console.WriteLine($"Iteration: {i}\nHead: {vh}\nFeet: {vf}\n");
+
+            var entListAddr = baseAddr
+                .ToAddress<nint>(handle)
+                .FollowOffsets(AssaultCube.EntityListOffsets);
+            for (var j = 1; j < AssaultCube.MaxPlayers; j++)
+            {
+                try
+                {
+                    var entListEntAddr = entListAddr.FollowOffsets(j * 0x4, 0x0);
+                    var entHp = entListEntAddr.FollowOffsetsAndRead(AssaultCube.FromEntityAddressToHealthOffsets);
+                    if (entHp.Buffer is <= 0 or > 100)
+                        continue;
+                    var headPos = entListEntAddr.WithType<Vector3>()
+                        .FollowOffsetsAndRead(AssaultCube.FromEntityAddressToHeadXPosOffsets);
+                    var feetPos = entListEntAddr.WithType<Vector3>()
+                        .FollowOffsetsAndRead(AssaultCube.FromEntityAddressToFeetXPosOffsets);
+                    System.Console.WriteLine($"Entity {j}:\nHead: {headPos.Buffer}\nFeet: {feetPos.Buffer}\n");
+                }
+                catch (MemoryException e)
+                {
+                    System.Console.WriteLine(e.Message);
+                    // Entity doesn't exist, is dead, broken or this code is broken
+                }
+            }
         }
     }
 }

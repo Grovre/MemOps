@@ -148,6 +148,17 @@ public sealed unsafe class BufferedMemoryAddress<T> : ICloneable
         return new BufferedMemoryAddress<T>(_handle, addr, PrintOnReadOrWrite);
     }
 
+    public BufferedMemoryAddress<T> FollowOffsetsAndRead(params nint[] offsets)
+    {
+        var addr = FollowOffsets(offsets);
+        addr.Read();
+        return addr;
+    }
+
+    public BufferedMemoryAddress<TNew> WithType<TNew>()
+        where TNew : struct
+        => new BufferedMemoryAddress<TNew>(_handle, Address, PrintOnReadOrWrite);
+
     /// <summary>
     /// Clones everything from this object into a new one, including the buffer.
     /// The same handle will be used.
