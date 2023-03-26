@@ -10,4 +10,6 @@ public class AssaultCube
     public static nint[] FromEntityAddressToRifleAmmoOffsets = new nint[] { 0x140 };
     public static nint[] FromEntityAddressToHeadXPosOffsets = new nint[] { 0x4 };
     public static nint[] FromEntityAddressToFeetXPosOffsets = new nint[] { 0x28 };
+    public static nint[] FromEntityAddressToHealthOffsets = new nint[] { 0xEC };
+    public static nint[] LobbyPlayerCountOffsets = new nint[] { 0x187C18 };
 }

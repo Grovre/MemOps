@@ -381,15 +381,16 @@
         </Structure>
       </Element>
       <Element Offset="4" Vartype="Float" Bytesize="4" OffsetHex="00000004" Description="head x" DisplayMethod="Unsigned Integer"/>
-      <Element Offset="8" Vartype="Float" Bytesize="4" OffsetHex="00000008" Description="head z" DisplayMethod="Unsigned Integer"/>
-      <Element Offset="12" Vartype="Float" Bytesize="4" OffsetHex="0000000C" Description="head y" DisplayMethod="Unsigned Integer"/>
+      <Element Offset="8" Vartype="Float" Bytesize="4" OffsetHex="00000008" Description="head y" DisplayMethod="Unsigned Integer"/>
+      <Element Offset="12" Vartype="Float" Bytesize="4" OffsetHex="0000000C" Description="head z" DisplayMethod="Unsigned Integer"/>
       <Element Offset="16" Vartype="4 Bytes" Bytesize="4" OffsetHex="00000010" DisplayMethod="Hexadecimal"/>
       <Element Offset="20" Vartype="4 Bytes" Bytesize="4" RLECount="5" OffsetHex="00000014" DisplayMethod="Unsigned Integer"/>
       <Element Offset="40" Vartype="Float" Bytesize="4" OffsetHex="00000028" Description="feet x" DisplayMethod="Unsigned Integer"/>
-      <Element Offset="44" Vartype="Float" Bytesize="4" OffsetHex="0000002C" Description="feet z" DisplayMethod="Unsigned Integer"/>
-      <Element Offset="48" Vartype="Float" Bytesize="4" OffsetHex="00000030" Description="feet y" DisplayMethod="Signed Integer"/>
-      <Element Offset="52" Vartype="Float" Bytesize="4" RLECount="2" OffsetHex="00000034" DisplayMethod="Unsigned Integer"/>
-      <Element Offset="60" Vartype="4 Bytes" Bytesize="4" OffsetHex="0000003C" DisplayMethod="Unsigned Integer"/>
+      <Element Offset="44" Vartype="Float" Bytesize="4" OffsetHex="0000002C" Description="feet y" DisplayMethod="Unsigned Integer"/>
+      <Element Offset="48" Vartype="Float" Bytesize="4" OffsetHex="00000030" Description="feet z" DisplayMethod="Signed Integer"/>
+      <Element Offset="52" Vartype="Float" Bytesize="4" OffsetHex="00000034" Description="yaw" DisplayMethod="Unsigned Integer"/>
+      <Element Offset="56" Vartype="Float" Bytesize="4" OffsetHex="00000038" Description="pitch" DisplayMethod="Unsigned Integer"/>
+      <Element Offset="60" Vartype="Float" Bytesize="4" OffsetHex="0000003C" Description="roll" DisplayMethod="Signed Integer"/>
       <Element Offset="64" Vartype="4 Bytes" Bytesize="4" OffsetHex="00000040" DisplayMethod="Hexadecimal"/>
       <Element Offset="68" Vartype="Float" Bytesize="4" OffsetHex="00000044" DisplayMethod="Unsigned Integer"/>
       <Element Offset="72" Vartype="Double" Bytesize="8" OffsetHex="00000048" DisplayMethod="Unsigned Integer"/>
