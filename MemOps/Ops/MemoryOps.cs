@@ -82,7 +82,7 @@ public static unsafe class MemoryOps
             if (!result)
             {
                 var code = Marshal.GetLastPInvokeError();
-                var message = $"WriteProcessMemory failed with error {code}. See MSDN for more info";
+                var message = $"WriteProcessMemory failed with error {code} (0x{code:X}). See MSDN for more info";
                 throw new MemoryException(message, code);
             }
         }
@@ -98,7 +98,7 @@ public static unsafe class MemoryOps
         if (offsets.Length == 1)
             return baseAddress + offsets[0];
         
-        /*
+        // Easier to debug than LINQ
         for (var i = 0; i < offsets.Length - 1; i++)
         {
             baseAddress += offsets[i];
@@ -106,13 +106,14 @@ public static unsafe class MemoryOps
         }
 
         return baseAddress + offsets[^1];
-        */
-
+        
+        /*
         return offsets
                 .SkipLast(1)
                 .Aggregate(baseAddress, (address, offset)
                     => Read<nint>(handle, (address + offset).ToPointer())) 
                + offsets[^1];
+        */
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
