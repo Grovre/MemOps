@@ -87,12 +87,12 @@ public static class Program
                 playerHeadPosAddr.Read(out vh);
                 playerFeetPosAddr.Read(out vf);
                 
-                // Read multiple test thrown here
-                // Player assumed to be standing still
+                // Read multiple test done here,
+                // Player assumed to be standing still.
                 // It works btw, and if it throws because
-                // someone wanted to play with it,
+                // someone wanted to play with this example
                 // then they can be smart enough to
-                // debug it when they move around.
+                // debug this and remove it when they play.
                 // I don't condone cheating in games
                 unsafe
                 {
@@ -111,7 +111,7 @@ public static class Program
 
             System.Console.WriteLine($"Iteration: {i}\nHead: {vh}\nFeet: {vf}\n");
 
-            // Code for reading the entity list
+            // Commented because we don't want to read the entity list, but keep the code because it works
             /*
             var entListAddr = baseAddr
                 .ToAddress<nint>(handle)
