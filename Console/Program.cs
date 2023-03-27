@@ -13,12 +13,12 @@ public static class Program
 {
     /*
      * Message from me on 3/25 at 10:04 PM:
-     * DON'T FORGET TO TARGET A 32-BIT BUILD FOR AC_CLIENT. JUST WASTED 2.5 HRS OF MY LIFE
-     * TRYING TO FIGURE OUT WHY DEREFERENCING A POINTER WAS RESULTING
-     * IN WEIRD AND IRRELEVANT ADDRESSES. THERE WAS NOTHING WRONG WITH THE CODE.
-     * IT WAS BECAUSE IT WAS TARGETING A 64-BIT BUILD SO NINT WAS READING 4
-     * MORE BYTES THAN IT WOULD ON A 32-BIT PROCESS. EVEN ADDED A RUNTIME
-     * CHECK MAKING SURE YOU AREN'T STUPID LIKE ME.
+     * DON'T FORGET TO TARGET A 32-BIT BUILD FOR 32-BIT APPS. Just wasted hours of my life
+     * trying to figure out why dereferencing a pointer was resulting
+     * in weird and irrelevant addresses. THERE WAS NOTHING WRONG WITH THE CODE.
+     * Tt was because I was targeting a 64-bit build so NINT WAS READING 4
+     * MORE BYTES THAN IT WOULD ON A 32-BIT PROCESS. even added a runtime
+     * check making sure you aren't stupid like me. Don't be like me.
      */
     public static void Main()
     {
@@ -89,7 +89,11 @@ public static class Program
                 
                 // Read multiple test thrown here
                 // Player assumed to be standing still
-                // It works btw
+                // It works btw, and if it throws because
+                // someone wanted to play with it,
+                // then they can be smart enough to
+                // debug it when they move around.
+                // I don't condone cheating in games
                 unsafe
                 {
                     var headFloats = new float[3];
