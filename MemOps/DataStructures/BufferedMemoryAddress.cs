@@ -145,7 +145,10 @@ public sealed unsafe class BufferedMemoryAddress<T> : ICloneable
     public BufferedMemoryAddress<T> FollowOffsets(params nint[] offsets)
     {
         var addr = MemoryOps.FollowOffsets(_handle, Address, offsets);
-        return new BufferedMemoryAddress<T>(_handle, addr, PrintOnReadOrWrite);
+        return new BufferedMemoryAddress<T>(_handle, addr, PrintOnReadOrWrite)
+        {
+            _buf = this._buf
+        };
     }
 
     public BufferedMemoryAddress<T> FollowOffsetsAndRead(params nint[] offsets)
