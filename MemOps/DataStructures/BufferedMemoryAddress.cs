@@ -68,6 +68,17 @@ public sealed unsafe class BufferedMemoryAddress<T> : ICloneable
     }
 
     /// <summary>
+    /// Reads the ith element into the ith index of the buffer span.
+    /// The structs must be contiguous. This object's buffer is
+    /// bypassed and values are written straight into the span.
+    /// </summary>
+    /// <param name="bufferSpan">Buffer to read to</param>
+    public void ReadMultiple(Span<T> bufferSpan)
+    {
+        MemoryOps.ReadMultiple(_handle, _address, bufferSpan, PrintOnReadOrWrite);
+    }
+
+    /// <summary>
     /// Continuously reads the address in a cycle. Results are stored in the buffer.
     /// Supports locking buffer I/O using a ReaderWriterLockSlim and finishing
     /// with a cancellation token, but these are optional.

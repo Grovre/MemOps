@@ -133,15 +133,15 @@ public static unsafe class MemoryOps
         }
     }
     
-/// <summary>
-/// Writes from the buffer into the given address.
-/// </summary>
-/// <param name="handle">Handle to write with</param>
-/// <param name="baseAddress">Address to write to</param>
-/// <param name="bufferStruct">Buffer to write with</param>
-/// <param name="printOnWrite">Whether or not to print a message immediately after writing</param>
-/// <typeparam name="T">Struct type the memory is interpreted as</typeparam>
-/// <exception cref="MemoryException">Thrown if WriteProcessMemory failed</exception>
+    /// <summary>
+    /// Writes from the buffer into the given address.
+    /// </summary>
+    /// <param name="handle">Handle to write with</param>
+    /// <param name="baseAddress">Address to write to</param>
+    /// <param name="bufferStruct">Buffer to write with</param>
+    /// <param name="printOnWrite">Whether or not to print a message immediately after writing</param>
+    /// <typeparam name="T">Struct type the memory is interpreted as</typeparam>
+    /// <exception cref="MemoryException">Thrown if WriteProcessMemory failed</exception>
     public static void Write<T>(SafeHandle handle, void* baseAddress, ref T bufferStruct, bool printOnWrite = false)
         where T: struct
     {
