@@ -15,9 +15,23 @@ namespace MemOps.Ops;
 // ReSharper disable once InconsistentNaming
 public static class ProcessOps // Somehow this is inconsistent naming
 {
+    /// <summary>
+    /// Opens a safe handle from the Win32 OpenProcess function.
+    /// Handles are not inherited.
+    /// </summary>
+    /// <param name="processId">The PID of the process to open</param>
+    /// <param name="combinedRights">Rights to open handle with</param>
+    /// <returns>Opened handle to process with rights</returns>
     public static SafeHandle OpenProcessSafeHandle(uint processId, ProcessAccessRights combinedRights)
         => PInvoke.OpenProcess_SafeHandle((PROCESS_ACCESS_RIGHTS)combinedRights, false, processId);
 
+    /// <summary>
+    /// Opens a safe handle from the Win32 OpenProcess function.
+    /// Handles are not inherited.
+    /// </summary>
+    /// <param name="processId">The process to open</param>
+    /// <param name="combinedRights">Rights to open handle with</param>
+    /// <returns>Opened handle to process with rights</returns>
     public static SafeHandle OpenProcessSafeHandle(this Process proc, ProcessAccessRights combinedRights)
         => OpenProcessSafeHandle((uint)proc.Id, combinedRights);
 

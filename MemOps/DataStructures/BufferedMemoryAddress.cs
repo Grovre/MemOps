@@ -42,7 +42,7 @@ public sealed unsafe class BufferedMemoryAddress<T> : ICloneable
     /// <param name="printOnReadOrWrite">Print on a read/write</param>
     public BufferedMemoryAddress(SafeHandle handle, nint address, bool printOnReadOrWrite)
     {
-        handle.IsMemoryValid();
+        handle.IsHandleValid();
         _handle = handle;
         _address = address.ToPointer();
         PrintOnReadOrWrite = printOnReadOrWrite;
@@ -138,10 +138,28 @@ public sealed unsafe class BufferedMemoryAddress<T> : ICloneable
         Write(ref v);
     }
 
+    /// <summary>
+    /// Creates a new BufferedMemoryAddress with the given address
+    /// interpreted as the given type
+    /// </summary>
+    /// <param name="newAddress">Address to replace with</param>
+    /// <typeparam name="TNew">New type to interpret memory as</typeparam>
+    /// <returns>Reinterpreted BufferedMemoryAddress at address</returns>
     public BufferedMemoryAddress<TNew> WithAddress<TNew>(nint newAddress)
         where TNew : struct
         => new BufferedMemoryAddress<TNew>(_handle, newAddress, PrintOnReadOrWrite);
 
+    /// <summary>
+    /// Follows offsets by doing some offset-pointer traversal.
+    /// This adds the ith offset to the current pointer, dereferences and repeats.
+    /// At the last offset, it only adds.
+    /// If there is only one offset provided for the params, it will only add
+    /// the offset to the address.
+    ///
+    /// Works exactly like how Cheat Engine follows pointers and offsets them.
+    /// </summary>
+    /// <param name="offsets">The offsets to follow</param>
+    /// <returns>The final address of the followed offsets</returns>
     public BufferedMemoryAddress<T> FollowOffsets(params nint[] offsets)
     {
         var addr = MemoryOps.FollowOffsets(_handle, Address, offsets);
@@ -151,6 +169,18 @@ public sealed unsafe class BufferedMemoryAddress<T> : ICloneable
         };
     }
 
+    /// <summary>
+    /// Follows offsets by doing some offset-pointer traversal.
+    /// This adds the ith offset to the current pointer, dereferences and repeats.
+    /// At the last offset, it only adds. This method will also read into the buffer
+    /// at the end.
+    /// If there is only one offset provided for the params, it will only add
+    /// the offset to the address.
+    ///
+    /// Works exactly like how Cheat Engine follows pointers and offsets them.
+    /// </summary>
+    /// <param name="offsets">The offsets to follow</param>
+    /// <returns>The final address of the followed offsets with a filled buffer</returns>
     public BufferedMemoryAddress<T> FollowOffsetsAndRead(params nint[] offsets)
     {
         var addr = FollowOffsets(offsets);
@@ -158,6 +188,13 @@ public sealed unsafe class BufferedMemoryAddress<T> : ICloneable
         return addr;
     }
 
+    /// <summary>
+    /// Reinterprets the type at the memory address in the BufferedMemoryAddress.
+    /// This copies the BufferedMemoryAddress without the buffer for safety. In
+    /// other words, the buffer will be empty.
+    /// </summary>
+    /// <typeparam name="TNew">The new type to reinterpret to</typeparam>
+    /// <returns>Reinterpreted memory address</returns>
     public BufferedMemoryAddress<TNew> WithType<TNew>()
         where TNew : struct
         => new BufferedMemoryAddress<TNew>(_handle, Address, PrintOnReadOrWrite);
