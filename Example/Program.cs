@@ -7,7 +7,7 @@ using MemOps.DataStructures;
 using MemOps.Enums;
 using MemOps.Ops;
 
-namespace Console;
+namespace Example;
 
 public static class Program
 {
@@ -128,11 +128,11 @@ public static class Program
                         .FollowOffsetsAndRead(AssaultCube.FromEntityAddressToHeadXPosOffsets);
                     var feetPos = entListEntAddr.WithType<Vector3>()
                         .FollowOffsetsAndRead(AssaultCube.FromEntityAddressToFeetXPosOffsets);
-                    System.Console.WriteLine($"Entity {j}:\nHead: {headPos.Buffer}\nFeet: {feetPos.Buffer}\n");
+                    System.Example.WriteLine($"Entity {j}:\nHead: {headPos.Buffer}\nFeet: {feetPos.Buffer}\n");
                 }
                 catch (MemoryException e)
                 {
-                    System.Console.WriteLine(e.Message);
+                    System.Example.WriteLine(e.Message);
                     // Entity doesn't exist, is dead, broken or this code is broken
                 }
             }

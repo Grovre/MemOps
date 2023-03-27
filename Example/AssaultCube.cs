@@ -1,6 +1,6 @@
-﻿namespace Console;
+﻿namespace Example;
 
-public class AssaultCube
+public static class AssaultCube
 {
     public const string ModuleName = "ac_client";
     public const int MaxPlayers = 32;
