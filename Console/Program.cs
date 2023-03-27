@@ -1,13 +1,10 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
 using System.Diagnostics;
-using System.Globalization;
 using System.Numerics;
 using System.Runtime.InteropServices;
 using MemOps.DataStructures;
 using MemOps.Enums;
-using MemOps.Exceptions;
-using MemOps.Extensions;
 using MemOps.Ops;
 
 namespace Console;
@@ -73,7 +70,7 @@ public static class Program
 
         for (var i = 0; i < 1_000; i++)
         {
-            Thread.Sleep(1000);
+            Thread.Sleep(15);
 
             playerHpAddr.Read(out var hp); // Only this reads here because it must be known and is always right
             var vh = Vector3.Zero;
@@ -89,11 +86,29 @@ public static class Program
                 playerRifleAmmoAddr.Write();
                 playerHeadPosAddr.Read(out vh);
                 playerFeetPosAddr.Read(out vf);
+                
+                // Read multiple test thrown here
+                // Player assumed to be standing still
+                // It works btw
+                unsafe
+                {
+                    var headFloats = new float[3];
+                    MemoryOps.ReadMultiple<float>(handle, playerHeadPosAddr.Address.ToPointer(), headFloats);
+                    var vht = new Vector3(headFloats);
+                    Debug.Assert(vh == vht);
+
+                    var feetFloats = headFloats;
+                    MemoryOps.ReadMultiple<float>(handle, playerFeetPosAddr.Address.ToPointer(), feetFloats);
+                    var vft = new Vector3(feetFloats);
+                    Debug.Assert(vf == vft);
+                }
             }
 
 
             System.Console.WriteLine($"Iteration: {i}\nHead: {vh}\nFeet: {vf}\n");
 
+            // Code for reading the entity list
+            /*
             var entListAddr = baseAddr
                 .ToAddress<nint>(handle)
                 .FollowOffsets(AssaultCube.EntityListOffsets);
@@ -117,6 +132,7 @@ public static class Program
                     // Entity doesn't exist, is dead, broken or this code is broken
                 }
             }
+            */
         }
     }
 }

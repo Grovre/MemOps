@@ -15,14 +15,13 @@ namespace MemOps.Ops;
 /// </summary>
 public static unsafe class MemoryOps
 {
-    public static void Read<T>(SafeHandle handle, void* baseAddress, out T bufferStruct, bool printOnRead = false)
-        where T: struct
+    public static void ReadBytes(SafeHandle handle, void* baseAddress, Span<byte> span, out nuint readBytes, bool printOnRead = false)
     {
         handle.IsMemoryValid();
-        bufferStruct = default;
-        var sz = (nuint)Marshal.SizeOf(bufferStruct);
+        var sz = (nuint)span.Length;
         nuint byteReadCount = default;
-        fixed (void* bufPtr = &bufferStruct)
+        ref var b0 = ref MemoryMarshal.GetReference(span);
+        fixed (void* bufPtr = &b0)
         {
             var result = PInvoke.ReadProcessMemory(handle, baseAddress, bufPtr, sz, &byteReadCount);
             if (!result)
@@ -32,16 +31,26 @@ public static unsafe class MemoryOps
                 throw new MemoryException(message, code);
             }
         }
+
+        readBytes = byteReadCount;
         
         if (printOnRead)
             Console.WriteLine($"Read {byteReadCount} bytes at 0x{((nint)baseAddress):X}");
     }
+    
+    public static void Read<T>(SafeHandle handle, void* baseAddress, out T bufferStruct, bool printOnRead = false)
+        where T: struct
+    {
+        bufferStruct = default;
+        var bufferSpan = MemoryMarshal.CreateSpan(ref bufferStruct, 1);
+        ReadMultiple(handle, baseAddress, bufferSpan, printOnRead);
+    }
 
-    public static T Read<T>(SafeHandle handle, void* baseAddress, bool printOnRead = false)
+    public static void ReadMultiple<T>(SafeHandle handle, void* baseAddress, Span<T> bufferSpan, bool printOnRead = false)
         where T : struct
     {
-        Read(handle, baseAddress, out T buf, printOnRead);
-        return buf;
+        var byteSpan = MemoryMarshal.AsBytes(bufferSpan);
+        ReadBytes(handle, baseAddress, byteSpan, out _, printOnRead);
     }
 
     public static void ReadCycle<T>(SafeHandle handle, void* baseAddress, ref T bufferStruct, TimeSpan delayBetweenReads, ReaderWriterLockSlim? rwLock = null, CancellationToken? cancelToken = null, bool writeOnRead = false)
