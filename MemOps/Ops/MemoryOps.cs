@@ -126,7 +126,7 @@ public static unsafe class MemoryOps
             Read(handle, baseAddress, out T internalBuffer, printOnRead);
 
             var entered = rwLock?.TryEnterWriteLock(TimeSpan.FromSeconds(10));
-            if (!entered.HasValue || !entered.Value)
+            if (entered.HasValue && !entered.Value) // If no value then there was no lock
                 throw new ArgumentException("Timed out after 10 seconds trying to enter write lock");
             bufferStruct = internalBuffer; // Do not inline Read, make lock as fast as possible
             rwLock?.ExitWriteLock();
