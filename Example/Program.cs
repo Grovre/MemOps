@@ -22,6 +22,7 @@ public static class Program
      */
     public static void Main()
     {
+        Console.WriteLine($"This process is x64: {Environment.Is64BitProcess}");
         using var proc = Process.GetProcessesByName(AssaultCube.ModuleName)[0];
         var baseAddr = proc.MainModule!.BaseAddress;
         using var handle = proc.OpenProcessSafeHandle(ProcessAccessRights.ProcessAllAccess);

@@ -13,8 +13,13 @@ public sealed class MemoryException : ExternalException
     /// Creates a MemoryException based off of the last PInvoke errors
     /// </summary>
     /// <returns>MemoryException using last PInvoke errors</returns>
-    public static MemoryException FromMostRecentPInvokeError()
-        => new(Marshal.GetLastPInvokeErrorMessage(), Marshal.GetLastPInvokeError());
+    public static MemoryException FromMostRecentPInvokeError(string? hint = null)
+    {
+        var message = Marshal.GetLastPInvokeErrorMessage();
+        if (hint != null)
+            message = message + "\n" + hint;
+        return new(message, Marshal.GetLastPInvokeError());
+    }
 
     public MemoryException()
     {

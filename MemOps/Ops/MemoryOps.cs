@@ -197,7 +197,7 @@ public static unsafe class MemoryOps
             baseAddress += offsets[i];
             Read(handle, baseAddress.ToPointer(), out baseAddress);
         }
-
+        
         return baseAddress + offsets[^1];
     }
 
