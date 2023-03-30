@@ -24,10 +24,10 @@ public static unsafe class MemoryOps
     /// <param name="handle">Handle with access to read with</param>
     /// <param name="baseAddress">Address in memory to read</param>
     /// <param name="span">Span to write the read bytes to</param>
-    /// <param name="readBytes">The amount of bytes read. Good for error handling. This will equal span length on success</param>
     /// <param name="printOnRead">Whether to print a message to the console immediately after reading</param>
     /// <exception cref="MemoryException">Thrown if the ReadProcessMemory function returned nonzero (failed)</exception>
-    public static void ReadBytes(SafeHandle handle, void* baseAddress, Span<byte> span, out nuint readBytes, bool printOnRead = false)
+    /// <returns>The amount of bytes that were read</returns>
+    public static nuint ReadBytes(SafeHandle handle, void* baseAddress, Span<byte> span, bool printOnRead = false)
     {
         handle.IsHandleValid();
         var sz = (nuint)span.Length;
@@ -44,10 +44,10 @@ public static unsafe class MemoryOps
             }
         }
 
-        readBytes = byteReadCount;
-        
         if (printOnRead)
             Console.WriteLine($"Read {byteReadCount} bytes at 0x{((nint)baseAddress):X}");
+        
+        return byteReadCount;
     }
     
     /// <summary>
@@ -60,7 +60,7 @@ public static unsafe class MemoryOps
     /// <param name="printOnRead">Whether or not to print immediately after reading from memory</param>
     /// <typeparam name="T">The struct type to interpret the memory as</typeparam>
     public static void Read<T>(SafeHandle handle, void* baseAddress, out T bufferStruct, bool printOnRead = false)
-        where T: struct
+        where T : unmanaged
     {
         bufferStruct = default;
         var bufferSpan = MemoryMarshal.CreateSpan(ref bufferStruct, 1);
@@ -78,10 +78,10 @@ public static unsafe class MemoryOps
     /// <param name="printOnRead">Whether or not to print immediately after reading from memory</param>
     /// <typeparam name="T">The struct type to interpret the memory as</typeparam>
     public static void ReadMultiple<T>(SafeHandle handle, void* baseAddress, Span<T> bufferSpan, bool printOnRead = false)
-        where T : struct
+        where T : unmanaged
     {
         var byteSpan = MemoryMarshal.AsBytes(bufferSpan);
-        ReadBytes(handle, baseAddress, byteSpan, out _, printOnRead);
+        ReadBytes(handle, baseAddress, byteSpan, printOnRead);
     }
 
     /// <summary>
@@ -107,7 +107,14 @@ public static unsafe class MemoryOps
     /// <typeparam name="T">Struct type the memory is interpreted as</typeparam>
     /// <exception cref="ArgumentOutOfRangeException">Thrown if the cycle interval is too short (le 0)</exception>
     /// <exception cref="ArgumentException">Thrown if the lock took more than 10 seconds to enter</exception>
-    public static void ReadCycle<T>(SafeHandle handle, void* baseAddress, ref T bufferStruct, TimeSpan delayBetweenReads, ReaderWriterLockSlim? rwLock = null, CancellationToken? cancelToken = null, bool printOnRead = false)
+    public static void ReadCycle<T>(
+        SafeHandle handle,
+        void* baseAddress,
+        ref T bufferStruct,
+        TimeSpan delayBetweenReads,
+        ReaderWriterLockSlim? rwLock = null,
+        CancellationToken? cancelToken = null,
+        bool printOnRead = false)
         where T : unmanaged
     {
         if (delayBetweenReads <= TimeSpan.Zero)
@@ -143,7 +150,7 @@ public static unsafe class MemoryOps
     /// <typeparam name="T">Struct type the memory is interpreted as</typeparam>
     /// <exception cref="MemoryException">Thrown if WriteProcessMemory failed</exception>
     public static void Write<T>(SafeHandle handle, void* baseAddress, ref T bufferStruct, bool printOnWrite = false)
-        where T: struct
+        where T : unmanaged
     {
         handle.IsHandleValid();
         var sz = (nuint)Marshal.SizeOf(bufferStruct);
@@ -192,14 +199,6 @@ public static unsafe class MemoryOps
         }
 
         return baseAddress + offsets[^1];
-        
-        /*
-        return offsets
-                .SkipLast(1)
-                .Aggregate(baseAddress, (address, offset)
-                    => Read<nint>(handle, (address + offset).ToPointer())) 
-               + offsets[^1];
-        */
     }
 
     /// <summary>
