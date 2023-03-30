@@ -108,7 +108,7 @@ public static unsafe class MemoryOps
     /// <exception cref="ArgumentOutOfRangeException">Thrown if the cycle interval is too short (le 0)</exception>
     /// <exception cref="ArgumentException">Thrown if the lock took more than 10 seconds to enter</exception>
     public static void ReadCycle<T>(SafeHandle handle, void* baseAddress, ref T bufferStruct, TimeSpan delayBetweenReads, ReaderWriterLockSlim? rwLock = null, CancellationToken? cancelToken = null, bool printOnRead = false)
-        where T : struct
+        where T : unmanaged
     {
         if (delayBetweenReads <= TimeSpan.Zero)
         {

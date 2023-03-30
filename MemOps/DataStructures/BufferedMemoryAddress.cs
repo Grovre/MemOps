@@ -9,7 +9,7 @@ namespace MemOps.DataStructures;
 /// </summary>
 /// <typeparam name="T">Non-null type used for the buffer</typeparam>
 public sealed unsafe class BufferedMemoryAddress<T> : ICloneable
-    where T : struct
+    where T : unmanaged
 {
     private readonly SafeHandle _handle;
     /// <summary>
@@ -157,7 +157,7 @@ public sealed unsafe class BufferedMemoryAddress<T> : ICloneable
     /// <typeparam name="TNew">New type to interpret memory as</typeparam>
     /// <returns>Reinterpreted BufferedMemoryAddress at address</returns>
     public BufferedMemoryAddress<TNew> WithAddress<TNew>(nint newAddress)
-        where TNew : struct
+        where TNew : unmanaged
         => new BufferedMemoryAddress<TNew>(_handle, newAddress, PrintOnReadOrWrite);
 
     /// <summary>
@@ -207,7 +207,7 @@ public sealed unsafe class BufferedMemoryAddress<T> : ICloneable
     /// <typeparam name="TNew">The new type to reinterpret to</typeparam>
     /// <returns>Reinterpreted memory address</returns>
     public BufferedMemoryAddress<TNew> WithType<TNew>()
-        where TNew : struct
+        where TNew : unmanaged
         => new BufferedMemoryAddress<TNew>(_handle, Address, PrintOnReadOrWrite);
 
     /// <summary>

@@ -18,5 +18,5 @@ public static class IntPtrExtensions
         this nint address, 
         SafeHandle handle,
         bool printOnReadOrWrite = false) 
-        where T : struct => new BufferedMemoryAddress<T>(handle, address, printOnReadOrWrite);
+        where T : unmanaged => new BufferedMemoryAddress<T>(handle, address, printOnReadOrWrite);
 }
