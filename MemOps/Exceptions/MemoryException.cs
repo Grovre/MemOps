@@ -4,23 +4,11 @@ using System.Runtime.Serialization;
 namespace MemOps.Exceptions;
 
 /// <summary>
-/// Exceptions relating to memory I/O using external Win32 memory I/O calls
+///     Exceptions relating to memory I/O using external Win32 memory I/O calls
 /// </summary>
 [Serializable]
 public sealed class MemoryException : ExternalException
 {
-    /// <summary>
-    /// Creates a MemoryException based off of the last PInvoke errors
-    /// </summary>
-    /// <returns>MemoryException using last PInvoke errors</returns>
-    public static MemoryException FromMostRecentPInvokeError(string? hint = null)
-    {
-        var message = Marshal.GetLastPInvokeErrorMessage();
-        if (hint != null)
-            message = message + "\n" + hint;
-        return new(message, Marshal.GetLastPInvokeError());
-    }
-
     public MemoryException()
     {
     }
@@ -40,5 +28,17 @@ public sealed class MemoryException : ExternalException
 
     public MemoryException(string? message, int errorCode) : base(message, errorCode)
     {
+    }
+
+    /// <summary>
+    ///     Creates a MemoryException based off of the last PInvoke errors
+    /// </summary>
+    /// <returns>MemoryException using last PInvoke errors</returns>
+    public static MemoryException FromMostRecentPInvokeError(string? hint = null)
+    {
+        var message = Marshal.GetLastPInvokeErrorMessage();
+        if (hint != null)
+            message = $"{message}\n{hint}";
+        return new MemoryException(message, Marshal.GetLastPInvokeError());
     }
 }
