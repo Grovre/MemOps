@@ -30,7 +30,7 @@ public static unsafe class MemoryOps
     /// <returns>The amount of bytes that were read</returns>
     public static nuint ReadBytes(SafeHandle handle, void* baseAddress, Span<byte> span, bool printOnRead = false)
     {
-        handle.IsHandleValid();
+        handle.AssertHandleIsValidDebug();
         var sz = (nuint)span.Length;
         nuint byteReadCount = default;
         ref var b0 = ref MemoryMarshal.GetReference(span);
@@ -150,7 +150,7 @@ public static unsafe class MemoryOps
     public static void Write<T>(SafeHandle handle, void* baseAddress, ref T bufferStruct, bool printOnWrite = false)
         where T : unmanaged
     {
-        handle.IsHandleValid();
+        handle.AssertHandleIsValidDebug();
         var sz = (nuint)Marshal.SizeOf(bufferStruct);
         nuint byteWriteCount = default;
         fixed (void* bufPtr = &bufferStruct)
@@ -182,39 +182,60 @@ public static unsafe class MemoryOps
     /// <returns>The final address as nint</returns>
     public static nint FollowOffsets(SafeHandle handle, nint baseAddress, params nint[] offsets)
     {
-        if (offsets.Length <= 0)
-            return baseAddress;
-        if (offsets.Length == 1)
-            return baseAddress + offsets[0];
+        switch (offsets.Length)
+        {
+            case <= 0:
+                return baseAddress;
+            case 1:
+                return baseAddress + offsets[0];
+        }
 
         // Easier to debug than LINQ
         for (var i = 0; i < offsets.Length - 1; i++)
         {
             baseAddress += offsets[i];
-            Read(handle, baseAddress.ToPointer(), out baseAddress);
+            Read(handle, (void*)baseAddress, out baseAddress);
         }
 
         return baseAddress + offsets[^1];
     }
 
     /// <summary>
-    ///     Purely for debugging, this ensures all boolean methods
-    ///     that check for an invalid handle pass. This uses a
-    ///     conditional attribute to avoid being called in release.
-    ///     If the program is in debug, it is aggressively inlined.
-    ///     After all, this is only three lines of code.
-    ///     Specifically:
     ///     Makes sure a handle is not null,
     ///     A handle is not invalid,
     ///     And a handle is not closed.
+    ///     If any of the above are true, returns false.
+    ///     Otherwise, returns true.
     /// </summary>
     /// <param name="handle"></param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    [Conditional("DEBUG")]
-    public static void IsHandleValid(this SafeHandle handle)
+    public static bool IsHandleValid(this SafeHandle handle)
     {
-        Debug.Assert(handle != null);
-        Debug.Assert(!handle.IsInvalid);
-        Debug.Assert(!handle.IsClosed);
+        return handle is { IsInvalid: false, IsClosed: false };
+    }
+
+    /// <summary>
+    ///     Asserts a handle is not valid according
+    ///     to the <code>IsHandleValid</code> function.
+    /// </summary>
+    /// <param name="handle">The handle to check</param>
+    /// <exception cref="MemoryException">Thrown when the handle is invalid</exception>
+    public static void AssertHandleIsValid(this SafeHandle handle)
+    {
+        if (!IsHandleValid(handle))
+            throw new MemoryException("Invalid handle");
+    }
+
+    /// <summary>
+    ///     Asserts a handle is not valid according
+    ///     to the <code>IsHandleValid</code> function.
+    ///     Only runs when the DEBUG constant is defined.
+    /// </summary>
+    /// <param name="handle">The handle to check</param>
+    /// <exception cref="MemoryException">Thrown when the handle is invalid</exception>
+    [Conditional("DEBUG")]
+    public static void AssertHandleIsValidDebug(this SafeHandle handle)
+    {
+        AssertHandleIsValid(handle);
     }
 }

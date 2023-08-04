@@ -23,7 +23,7 @@ public sealed unsafe class BufferedMemoryAddress<T> : ICloneable
     /// <param name="printOnReadOrWrite">Print on a read/write</param>
     public BufferedMemoryAddress(SafeHandle handle, nint address, bool printOnReadOrWrite)
     {
-        handle.IsHandleValid();
+        handle.AssertHandleIsValidDebug();
         _handle = handle;
         _address = address.ToPointer();
         PrintOnReadOrWrite = printOnReadOrWrite;
