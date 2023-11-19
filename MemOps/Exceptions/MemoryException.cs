@@ -6,7 +6,6 @@ namespace MemOps.Exceptions;
 /// <summary>
 /// Exceptions relating to memory I/O using external Win32 memory I/O calls
 /// </summary>
-[Serializable]
 public sealed class MemoryException : ExternalException
 {
     /// <summary>
@@ -22,11 +21,6 @@ public sealed class MemoryException : ExternalException
     }
 
     public MemoryException()
-    {
-    }
-
-    // SonarLint said make private, so made private
-    private MemoryException(SerializationInfo info, StreamingContext context) : base(info, context)
     {
     }
 
