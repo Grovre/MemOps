@@ -3,8 +3,8 @@
 namespace MemOps.Enums;
 
 /// <summary>
-/// Forwarded Win32 process access rights exposed publicly.
-/// All flags represent the same value as Win32 access right flags.
+///     Forwarded Win32 process access rights exposed publicly.
+///     All flags represent the same value as Win32 access right flags.
 /// </summary>
 [Flags]
 // ReSharper disable once InconsistentNaming
@@ -30,5 +30,5 @@ public enum ProcessAccessRights : uint
     ProcessWriteDac = PAR.PROCESS_WRITE_DAC,
     ProcessWriteOwner = PAR.PROCESS_WRITE_OWNER,
     ProcessSynchronize = PAR.PROCESS_SYNCHRONIZE,
-    ProcessStandardRightsRequired = PAR.PROCESS_STANDARD_RIGHTS_REQUIRED,
+    ProcessStandardRightsRequired = PAR.PROCESS_STANDARD_RIGHTS_REQUIRED
 }
