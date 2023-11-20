@@ -18,21 +18,18 @@ public class PInvokeMemoryAddress<T>
         MemoryAddress = memoryAddress;
     }
 
-    public unsafe bool TryRead(out T v)
+    public unsafe void Read(out T v)
     {
         MemoryOps.Read(Handle, MemoryAddress.Pointer.ToPointer(), out v);
-        return true;
     }
 
-    public unsafe bool TryReadMultiple(Span<T> span)
+    public unsafe void ReadMultiple(Span<T> span)
     {
         MemoryOps.ReadMultiple(Handle, MemoryAddress.Pointer.ToPointer(), span);
-        return true;
     }
 
-    public unsafe bool TryWrite(ref T v)
+    public unsafe void Write(ref T v)
     {
         MemoryOps.Write(Handle, MemoryAddress.Pointer.ToPointer(), ref v);
-        return true;
     }
 }
