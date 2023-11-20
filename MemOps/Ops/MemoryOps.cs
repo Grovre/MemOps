@@ -82,7 +82,7 @@ public static unsafe class MemoryOps
         bool printOnRead = false)
         where T : unmanaged
     {
-        var byteSpan = MemoryMarshal.AsBytes(bufferSpan);
+        var byteSpan = MemoryMarshal.Cast<T, byte>(bufferSpan);
         ReadBytes(handle, baseAddress, byteSpan, printOnRead);
     }
 
