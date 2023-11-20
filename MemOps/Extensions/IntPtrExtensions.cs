@@ -1,5 +1,5 @@
 ﻿using System.Runtime.InteropServices;
-using MemOps.DataStructures;
+using MemOps.Addresses;
 
 namespace MemOps.Extensions;
 
