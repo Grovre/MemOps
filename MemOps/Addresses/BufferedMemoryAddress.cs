@@ -1,13 +1,14 @@
 ﻿using System.Runtime.InteropServices;
 using MemOps.Ops;
 
-namespace MemOps.DataStructures;
+namespace MemOps.Addresses;
 
 /// <summary>
 ///     A class that contains an internal buffer for reading and writing to an address through a handle.
 ///     Can be used in a safe context for unsafe ops and greatly abstracts the external Win32 calls made.
 /// </summary>
 /// <typeparam name="T">Non-null type used for the buffer</typeparam>
+[Obsolete("Use MemoryAddress type", false)]
 public sealed unsafe class BufferedMemoryAddress<T> : ICloneable
     where T : unmanaged
 {
