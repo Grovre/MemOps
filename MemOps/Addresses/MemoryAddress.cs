@@ -17,12 +17,12 @@ public unsafe class MemoryAddress<T> : MemoryManager<T>
     /// </summary>
     public readonly IntPtr Pointer;
     /// <summary>
-    /// Length in T of how many T objects are at the address
+    /// How many T objects are at the address
     /// </summary>
     public readonly int Length;
     /// <summary>
     /// Determines if the memory should be released when
-    /// this an instance of this type is disposed of.
+    /// the MemoryAddress object is disposed of.
     /// </summary>
     public readonly bool HasOwnership;
 
