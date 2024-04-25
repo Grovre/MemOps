@@ -33,8 +33,7 @@ public static unsafe class MemoryOps
         handle.AssertHandleIsValidDebug();
         var sz = (nuint)span.Length;
         nuint byteReadCount = default;
-        ref var b0 = ref MemoryMarshal.GetReference(span);
-        fixed (void* bufPtr = &b0)
+        fixed (void* bufPtr = span)
         {
             var result = PInvoke.ReadProcessMemory(handle, baseAddress, bufPtr, sz, &byteReadCount);
             if (!result)
