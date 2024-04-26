@@ -56,6 +56,11 @@ public unsafe class MemoryAddress<T> : MemoryManager<T>
     {
         return new Span<T>(Pointer.ToPointer(), Length);
     }
+
+    public Span<TTo> GetSpan<TTo>() where TTo : unmanaged
+    {
+        return MemoryMarshal.Cast<T, TTo>(GetSpan());
+    }
     
     /// <summary>
     /// Disposes of the memory if this object has ownersihp
