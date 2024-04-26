@@ -88,4 +88,7 @@ public unsafe class MemoryAddress<T> : MemoryManager<T>
     {
         throw new NotImplementedException();
     }
+
+    public static implicit operator Span<T>(MemoryAddress<T> memAddr) => memAddr.GetSpan();
+    public static implicit operator ReadOnlySpan<T>(MemoryAddress<T> memAddr) => memAddr.GetSpan();
 }

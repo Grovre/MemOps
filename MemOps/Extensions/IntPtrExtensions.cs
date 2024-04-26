@@ -6,20 +6,15 @@ namespace MemOps.Extensions;
 public static class IntPtrExtensions
 {
     /// <summary>
-    ///     Creates a BufferedMemoryAddress from the nint address.
-    ///     The buffer will be empty.
+    /// Converts an IntPtr to a MemoryAddress
     /// </summary>
-    /// <param name="address">Address to set for BufferedMemoryAddress</param>
-    /// <param name="handle">Handle for memory ops with</param>
-    /// <param name="printOnReadOrWrite">Whether or not to print immediately after a read or write</param>
-    /// <typeparam name="T">Struct type to interpret memory at address as</typeparam>
-    /// <returns>New BufferedMemoryAddress instance</returns>
-    public static BufferedMemoryAddress<T> ToAddress<T>(
-        this nint address,
-        SafeHandle handle,
-        bool printOnReadOrWrite = false)
-        where T : unmanaged
+    /// <param name="ptr">Pointer to memory</param>
+    /// <param name="length">Length of elements at pointer</param>
+    /// <param name="hasOwnership">Memory disposed of when MemoryAddress disposed of</param>
+    /// <typeparam name="T">Unmanaged type of elements</typeparam>
+    /// <returns>New MemoryAddress of provided pointer and length</returns>
+    public static MemoryAddress<T> ToMemoryAddress<T>(this IntPtr ptr, int length, bool hasOwnership) where T : unmanaged
     {
-        return new BufferedMemoryAddress<T>(handle, address, printOnReadOrWrite);
+        return new MemoryAddress<T>(ptr, length, hasOwnership);
     }
 }
