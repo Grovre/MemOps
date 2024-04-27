@@ -8,7 +8,7 @@
         <Title>MemOps</Title>
         <Copyright>MIT</Copyright>
         <RepositoryUrl>https://github.com/Grovre/MemOps</RepositoryUrl>
-        <LangVersion>12</LangVersion>
+        <LangVersion>default</LangVersion>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <TargetFramework>net8.0</TargetFramework>
         <PlatformTarget>AnyCPU</PlatformTarget>
