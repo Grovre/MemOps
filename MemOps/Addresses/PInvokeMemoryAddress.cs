@@ -61,4 +61,13 @@ public class PInvokeMemoryAddress<T> : MemoryAddress<T>
     {
         MemoryOps.Write(Handle, Pointer.ToPointer(), ref v);
     }
+    
+    /// <summary>
+    /// Writes an amount of T depending on the length of the span
+    /// </summary>
+    /// <param name="span">Source buffer</param>
+    public unsafe void WriteMultiple(ReadOnlySpan<T> span)
+    {
+        MemoryOps.WriteMultiple(Handle, Pointer.ToPointer(), span);
+    }
 }

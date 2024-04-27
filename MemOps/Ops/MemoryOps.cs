@@ -138,21 +138,24 @@ public static unsafe class MemoryOps
     }
 
     /// <summary>
-    ///     Writes from the buffer into the given address.
+    ///     The lowest form of the Write functions provided by MemoryOps. It is strongly recommended to use
+    ///     the "ReadMultiple" function over this which, if the final type you intend to write is not
+    ///     actually byte or sbyte, it will abstract away the whole process of going from a span of
+    ///     the given type to a span of bytes.
     /// </summary>
-    /// <param name="handle">Handle to write with</param>
-    /// <param name="baseAddress">Address to write to</param>
-    /// <param name="bufferStruct">Buffer to write with</param>
-    /// <param name="printOnWrite">Whether or not to print a message immediately after writing</param>
-    /// <typeparam name="T">Struct type the memory is interpreted as</typeparam>
-    /// <exception cref="MemoryException">Thrown if WriteProcessMemory failed</exception>
-    public static void Write<T>(SafeHandle handle, void* baseAddress, ref T bufferStruct, bool printOnWrite = false)
-        where T : unmanaged
+    /// <param name="handle">Handle with access to write with</param>
+    /// <param name="baseAddress">Address in memory to write</param>
+    /// <param name="span">Byte source</param>
+    /// <param name="printOnWrite">Whether to print a message to the console immediately after writing</param>
+    /// <exception cref="MemoryException">Thrown if the WriteProcessMemory function returned nonzero (failed)</exception>
+    /// <returns>The amount of bytes that were written</returns>
+    public static nuint WriteBytes(SafeHandle handle, void* baseAddress, ReadOnlySpan<byte> bytes,
+        bool printOnWrite = false)
     {
         handle.AssertHandleIsValidDebug();
-        var sz = (nuint)Marshal.SizeOf(bufferStruct);
+        var sz = (nuint)bytes.Length;
         nuint byteWriteCount = default;
-        fixed (void* bufPtr = &bufferStruct)
+        fixed (void* bufPtr = bytes)
         {
             var result = PInvoke.WriteProcessMemory(handle, baseAddress, bufPtr, sz, &byteWriteCount);
             if (!result)
@@ -165,6 +168,41 @@ public static unsafe class MemoryOps
 
         if (printOnWrite)
             Console.WriteLine($"Wrote {byteWriteCount} bytes at 0x{(nint)baseAddress:X}");
+
+        return byteWriteCount;
+    }
+
+    /// <summary>
+    ///     Provides a way to interact with the lower WriteProcessMemory function from the
+    ///     Win32 API.
+    /// </summary>
+    /// <param name="handle">Handle to write memory with</param>
+    /// <param name="baseAddress">Address to write to</param>
+    /// <param name="bufferStruct">Data source</param>
+    /// <param name="printOnWrite">Whether or not to print immediately after writing from memory</param>
+    /// <typeparam name="T">The struct type to interpret the memory as</typeparam>
+    public static void Write<T>(SafeHandle handle, void* baseAddress, ref T bufferStruct, bool printOnWrite = false)
+        where T : unmanaged
+    {
+        var span = MemoryMarshal.CreateReadOnlySpan(ref bufferStruct, 1);
+        WriteMultiple(handle, baseAddress, span, printOnWrite);
+    }
+
+    /// <summary>
+    ///     Provides a way to interact with the lower WriteProcessMemory function from the
+    ///     Win32 API. This will write contiguously the same amount of values as there are
+    ///     indices in the given span, to the given span starting from the base address.
+    /// </summary>
+    /// <param name="handle">Handle to write memory with</param>
+    /// <param name="baseAddress">Address to write from buffer source</param>
+    /// <param name="bufferSpan">Writing buffer source</param>
+    /// <param name="printOnWrite">Whether or not to print immediately after writing from memory</param>
+    /// <typeparam name="T">The struct type to interpret the memory as</typeparam>
+    public static void WriteMultiple<T>(SafeHandle handle, void* baseAddress, ReadOnlySpan<T> bufferSpan,
+        bool printOnWrite = false) where T : unmanaged
+    {
+        var byteSpan = MemoryMarshal.AsBytes(bufferSpan);
+        WriteBytes(handle, baseAddress, byteSpan, printOnWrite);
     }
 
     /// <summary>
