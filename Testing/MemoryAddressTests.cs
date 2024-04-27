@@ -6,11 +6,11 @@ namespace Testing;
 
 [TestFixture]
 [Parallelizable(ParallelScope.All)]
-public class Tests
+public class MemoryAddressTests
 {
     private const int Size = 1_000_000;
 
-    private ThreadLocal<MemoryAddress<byte>> UnmanagedMemory = new (() =>
+    private readonly ThreadLocal<MemoryAddress<byte>> UnmanagedMemory = new (() =>
     {
         var memAddr = Marshal.AllocHGlobal(Size)
             .ToMemoryAddress<byte>(Size, true);
