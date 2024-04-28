@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.Diagnostics;
+using System.Runtime.InteropServices;
 using MemOps.Enums;
 using MemOps.Ops;
 
@@ -73,7 +74,9 @@ public class PInvokeMemoryAddress<T> : MemoryAddress<T>
 
     public override Span<T> GetSpan()
     {
-        throw new NotImplementedException("Cannot get a span of memory of a separate process." +
-                                          "Try reading multiple instead");
+        if (Handle != Process.GetCurrentProcess().SafeHandle)
+            throw new AccessViolationException("Cannot get span over a different process");
+        
+        return base.GetSpan();
     }
 }
