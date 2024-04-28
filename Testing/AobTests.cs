@@ -43,4 +43,16 @@ public class AobTests
         Assert.DoesNotThrow(() => result = scanner.Scan(test.Pattern, test.Mask));
         Assert.That(result, Is.GreaterThanOrEqualTo(nint.Zero));
     }
+
+    [Test]
+    public void TestVectorScan()
+    {
+        var test = prepareScanTest();
+        
+        var scanner = new AobScanner(test.Data, new VectorScan());
+        nint result = -1;
+        
+        Assert.DoesNotThrow(() => result = scanner.Scan(test.Pattern, test.Mask));
+        Assert.That(result, Is.GreaterThanOrEqualTo(nint.Zero));
+    }
 }
