@@ -41,7 +41,7 @@ public class AobTests
         nint result = -1;
         
         Assert.DoesNotThrow(() => result = scanner.Scan(test.Pattern, test.Mask));
-        Assert.That(result, Is.GreaterThanOrEqualTo(nint.Zero));
+        Assert.That(result, Is.EqualTo(test.ExpectedResult));
     }
 
     [Test]
@@ -53,6 +53,6 @@ public class AobTests
         nint result = -1;
         
         Assert.DoesNotThrow(() => result = scanner.Scan(test.Pattern, test.Mask));
-        Assert.That(result, Is.GreaterThanOrEqualTo(nint.Zero));
+        Assert.That(result, Is.EqualTo(test.ExpectedResult));
     }
 }
