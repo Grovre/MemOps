@@ -9,32 +9,38 @@ public class AobTests
 {
     ThreadLocal<byte[]> _100MbData = new(() => new byte[1024 * 1024 * 100]);
     private const int PatternLength = 19;
+    
+    private record ScanTest(byte[] Data, byte[] Pattern, byte[] Mask, nint ExpectedResult);
 
-    private byte[] prepareScanTest(Span<byte> dataToScan, int patternLength)
+    private ScanTest prepareScanTest()
     {
         var random = new Random();
+        
+        var dataToScan = _100MbData.Value!;
         random.NextBytes(dataToScan);
-        var pattern = new byte[patternLength];
+        
+        var pattern = new byte[PatternLength];
         random.NextBytes(pattern);
-        pattern[random.Next(patternLength)] = 0;
-        pattern.AsSpan().CopyTo(dataToScan[random.Next(dataToScan.Length - patternLength)..]);
-        return pattern;
+        var patternIndex = random.Next(dataToScan.Length - PatternLength);
+        pattern.AsSpan().CopyTo(dataToScan.AsSpan()[patternIndex..]);
+        
+        var mask = new byte[pattern.Length];
+        for (var i = 0; i < mask.Length; i++)
+            mask[i] = 0xFF;
+        mask[random.Next(mask.Length)] = 0;
+        
+        return new ScanTest(dataToScan, pattern, mask, patternIndex);
     }
     
     [Test]
     public void TestLinearScan()
     {
-        var data = _100MbData.Value;
-        var pattern = prepareScanTest(data, PatternLength);
+        var test = prepareScanTest();
         
-        var mask = new byte[pattern.Length];
-        for (var i = 0; i < mask.Length; i++)
-            mask[i] = 0xFF;
-        
-        var scanner = new AobScanner(data, new LinearScan());
+        var scanner = new AobScanner(test.Data, new LinearScan());
         nint result = -1;
         
-        Assert.DoesNotThrow(() => result = scanner.Scan(pattern, mask));
+        Assert.DoesNotThrow(() => result = scanner.Scan(test.Pattern, test.Mask));
         Assert.That(result, Is.GreaterThanOrEqualTo(nint.Zero));
     }
 }
