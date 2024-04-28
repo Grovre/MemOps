@@ -29,6 +29,6 @@ public class LinearScan : IScanStrategy
             }
         }
 
-        throw new ScanFailedException("No AOB pattern found");
+        return -1;
     }
 }

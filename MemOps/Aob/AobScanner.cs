@@ -1,4 +1,5 @@
 ﻿using MemOps.Aob.Strategies;
+using MemOps.Exceptions;
 
 namespace MemOps.Aob;
 
@@ -15,6 +16,10 @@ public class AobScanner
 
     public nint Scan(ReadOnlySpan<byte> pattern, ReadOnlySpan<byte> mask)
     {
-        return _scanStrategy.Scan(pattern, mask, _data.Span);
+        var i = _scanStrategy.Scan(pattern, mask, _data.Span);
+        if (i < 0)
+            throw new ScanFailedException("Pattern not found");
+
+        return i;
     }
 }
