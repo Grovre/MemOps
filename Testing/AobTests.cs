@@ -7,7 +7,7 @@ namespace Testing;
 [Parallelizable(ParallelScope.All)]
 public class AobTests
 {
-    ThreadLocal<byte[]> _100MbData = new(() => new byte[1024 * 1024 * 100]);
+    ThreadLocal<byte[]> _gigabyteData = new(() => new byte[1024 * 1024 * 1024]);
     private const int PatternLength = 19;
     
     private record ScanTest(byte[] Data, byte[] Pattern, byte[] Mask, nint ExpectedResult);
@@ -16,7 +16,7 @@ public class AobTests
     {
         var random = new Random();
         
-        var dataToScan = _100MbData.Value!;
+        var dataToScan = _gigabyteData.Value!;
         random.NextBytes(dataToScan);
         
         var pattern = new byte[PatternLength];

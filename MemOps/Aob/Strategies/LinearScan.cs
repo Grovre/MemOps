@@ -11,7 +11,7 @@ public class LinearScan : IScanStrategy
             var found = true;
             for (var j = 0; j < pattern.Length; j++)
             {
-                if (mask[j] == 0x00)
+                if (mask[j] == 0)
                 {
                     continue;
                 }
