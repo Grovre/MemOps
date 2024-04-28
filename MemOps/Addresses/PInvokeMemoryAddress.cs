@@ -70,4 +70,10 @@ public class PInvokeMemoryAddress<T> : MemoryAddress<T>
     {
         MemoryOps.WriteMultiple(Handle, Pointer.ToPointer(), span);
     }
+
+    public override Span<T> GetSpan()
+    {
+        throw new NotImplementedException("Cannot get a span of memory of a separate process." +
+                                          "Try reading multiple instead");
+    }
 }
