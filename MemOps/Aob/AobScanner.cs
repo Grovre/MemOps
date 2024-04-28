@@ -5,9 +5,9 @@ namespace MemOps.Aob;
 public class AobScanner
 {
     private Memory<byte> _data;
-    private ScanStrategy _scanStrategy;
+    private IScanStrategy _scanStrategy;
 
-    public AobScanner(Memory<byte> data, ScanStrategy scanStrategy)
+    public AobScanner(Memory<byte> data, IScanStrategy scanStrategy)
     {
         _data = data;
         _scanStrategy = scanStrategy;

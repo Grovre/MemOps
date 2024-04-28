@@ -2,7 +2,7 @@
 
 namespace MemOps.Aob.Strategies;
 
-public class LinearScan : ScanStrategy
+public class LinearScan : IScanStrategy
 {
     public nint Scan(ReadOnlySpan<byte> pattern, ReadOnlySpan<byte> mask, ReadOnlySpan<byte> data)
     {
