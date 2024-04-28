@@ -5,6 +5,12 @@ namespace MemOps.Aob.Strategies;
 
 public class VectorScan : IScanStrategy
 {
+    public VectorScan()
+    {
+        throw new NotImplementedException(
+            "VectorScan is not implemented properly yet.");
+    }
+
     public nint Scan(ReadOnlySpan<byte> pattern, ReadOnlySpan<byte> mask, ReadOnlySpan<byte> data)
     {
         var patternLength = pattern.Length;
