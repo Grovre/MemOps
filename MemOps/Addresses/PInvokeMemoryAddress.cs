@@ -71,12 +71,4 @@ public class PInvokeMemoryAddress<T> : MemoryAddress<T>
     {
         MemoryOps.WriteMultiple(Handle, Pointer.ToPointer(), span);
     }
-
-    public override Span<T> GetSpan()
-    {
-        if (Handle != Process.GetCurrentProcess().SafeHandle)
-            throw new AccessViolationException("Cannot get span over a different process");
-        
-        return base.GetSpan();
-    }
 }
