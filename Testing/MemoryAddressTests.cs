@@ -13,7 +13,7 @@ public class MemoryAddressTests
     private readonly ThreadLocal<MemoryAddress<byte>> UnmanagedMemory = new (() =>
     {
         var memAddr = Marshal.AllocHGlobal(Size)
-            .ToMemoryAddress<byte>(Size, true);
+            .ToMemoryAddress<byte>(Size);
 
         var rand = new Random();
         rand.NextBytes(memAddr);

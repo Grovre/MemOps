@@ -12,7 +12,7 @@ public class IntPtrTests
     private unsafe MemoryAddress<nint> GeneratePointerChain(nint finalAddress, Span<nint> offsets)
     {
         var p0AddressesChain = Marshal.AllocHGlobal(sizeof(nint) * offsets.Length);
-        var addressChain = new MemoryAddress<nint>(p0AddressesChain, offsets.Length, true);
+        var addressChain = new MemoryAddress<nint>(p0AddressesChain, offsets.Length);
         
         addressChain.GetSpan().Fill(p0AddressesChain);
         addressChain.GetSpan()[^1] = finalAddress;

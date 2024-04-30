@@ -18,7 +18,6 @@ public class PInvokeMemoryAddressTests
         var memAddr = new PInvokeMemoryAddress<byte>(
             memPtr, 
             Size, 
-            true, 
             hproc, 
             ProcessAccessRights.ProcessAllAccess);
 

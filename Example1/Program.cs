@@ -4,7 +4,7 @@ using MemOps.Extensions;
 const int size = 1_000;
 var longs = Marshal
     .AllocHGlobal(sizeof(long) * size)
-    .ToMemoryAddress<long>(size, true);
+    .ToMemoryAddress<long>(size);
 GC.AddMemoryPressure(longs.GetSpan<byte>().Length);
 
 for (var i = 0; i < longs.Length; i++)

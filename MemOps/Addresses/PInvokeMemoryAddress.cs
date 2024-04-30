@@ -29,7 +29,7 @@ public class PInvokeMemoryAddress<T> : MemoryAddress<T>
     /// <param name="hasOwnership">Should memory be released when this instance is disposed?</param>
     /// <param name="handle">Handle to process</param>
     /// <param name="accessRights">Access rights needed</param>
-    public PInvokeMemoryAddress(IntPtr ptr, int length, bool hasOwnership, SafeHandle handle, ProcessAccessRights accessRights) : base(ptr, length, hasOwnership)
+    public PInvokeMemoryAddress(IntPtr ptr, int length, SafeHandle handle, ProcessAccessRights accessRights) : base(ptr, length)
     {
         Handle = handle;
         AccessRights = accessRights;
