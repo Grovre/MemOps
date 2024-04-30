@@ -1,4 +1,5 @@
 ﻿using System.Runtime.InteropServices;
+using MemOps.Extensions;
 using MemOps.Ops;
 
 namespace MemOps.Addresses;
@@ -190,7 +191,7 @@ public sealed unsafe class BufferedMemoryAddress<T> : ICloneable
     /// <returns>The final address of the followed offsets</returns>
     public BufferedMemoryAddress<T> FollowOffsets(params nint[] offsets)
     {
-        var addr = MemoryOps.FollowOffsets(_handle, Address, offsets);
+        var addr = Address.PInvokeChain(_handle, offsets);
         return new BufferedMemoryAddress<T>(_handle, addr, PrintOnReadOrWrite)
         {
             _buf = _buf

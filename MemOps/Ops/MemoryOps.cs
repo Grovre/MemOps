@@ -206,38 +206,6 @@ public static unsafe class MemoryOps
     }
 
     /// <summary>
-    ///     Follows offsets for a nint by doing offset-pointer traversal.
-    ///     This adds the offset to the address, dereferences it, and repeats until
-    ///     all offsets have been added to the dereferenced pointers and the final
-    ///     address has been reached.
-    ///     If there is only one offset provided for params, this will only add the offset.
-    ///     This function works exactly like how Cheat Engine follows pointers.
-    /// </summary>
-    /// <param name="handle">Handle to read with</param>
-    /// <param name="baseAddress">Address to start from</param>
-    /// <param name="offsets">Offsets to follow</param>
-    /// <returns>The final address as nint</returns>
-    public static nint FollowOffsets(SafeHandle handle, nint baseAddress, params nint[] offsets)
-    {
-        switch (offsets.Length)
-        {
-            case <= 0:
-                return baseAddress;
-            case 1:
-                return baseAddress + offsets[0];
-        }
-
-        // Easier to debug than LINQ
-        for (var i = 0; i < offsets.Length - 1; i++)
-        {
-            baseAddress += offsets[i];
-            Read(handle, (void*)baseAddress, out baseAddress);
-        }
-
-        return baseAddress + offsets[^1];
-    }
-
-    /// <summary>
     ///     Makes sure a handle is not null,
     ///     A handle is not invalid,
     ///     And a handle is not closed.
