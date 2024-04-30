@@ -47,6 +47,8 @@ public class AobTests
     [Test]
     public void TestVectorScan()
     {
+        Assert.Throws<NotImplementedException>(
+            () => new AobScanner(Memory<byte>.Empty, new VectorScan()));
         return;
         var test = prepareScanTest();
         
