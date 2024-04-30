@@ -9,6 +9,8 @@ namespace Testing;
 [Parallelizable(ParallelScope.All)]
 public class IntPtrTests
 {
+    private ThreadLocal<nint[]> _offsets = new(() => new nint[1024 * 1024 * 10]);
+    
     private unsafe MemoryAddress<nint> GeneratePointerChain(nint finalAddress, Span<nint> offsets)
     {
         var p0AddressesChain = Marshal.AllocHGlobal(sizeof(nint) * offsets.Length);
@@ -27,14 +29,13 @@ public class IntPtrTests
     [Test]
     public unsafe void TestChain()
     {
-        var offsets = new nint[150_000_038];
         var finalAddress = Marshal.AllocHGlobal(sizeof(decimal));
-        var addressChain = GeneratePointerChain(finalAddress, offsets);
+        var addressChain = GeneratePointerChain(finalAddress, _offsets.Value!);
         Console.WriteLine($"Memory used: {GC.GetTotalMemory(true) / 1024 / 1024} MB");
         
         const decimal expectedValue = 0.987654321m;
         *(decimal*)finalAddress = expectedValue;
-        var chainedAddress = addressChain.Pointer.Chain(offsets);
+        var chainedAddress = addressChain.Pointer.Chain(_offsets.Value!);
         
         Assert.Multiple(() =>
         {
