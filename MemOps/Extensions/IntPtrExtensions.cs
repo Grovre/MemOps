@@ -17,4 +17,12 @@ public static class IntPtrExtensions
     {
         return new MemoryAddress<T>(ptr, length, hasOwnership);
     }
+
+    public static unsafe nint Chain(this nint baseAddress, params nint[] offsets)
+    {
+        foreach (var offset in offsets)
+            baseAddress = *(nint*)baseAddress + offset;
+
+        return baseAddress;
+    }
 }
