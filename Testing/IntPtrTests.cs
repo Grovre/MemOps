@@ -9,7 +9,6 @@ namespace Testing;
 [Parallelizable(ParallelScope.All)]
 public class IntPtrTests
 {
-    // USE WITH FIXED OFFSETS SPAN ONLY
     private unsafe MemoryAddress<nint> GeneratePointerChain(nint finalAddress, Span<nint> offsets)
     {
         var p0AddressesChain = Marshal.AllocHGlobal(sizeof(nint) * offsets.Length);
@@ -29,17 +28,18 @@ public class IntPtrTests
     public unsafe void TestChain()
     {
         var offsets = new nint[150_000_038];
-        Console.WriteLine($"Memory used: {GC.GetTotalMemory(true) / 1024 / 1024} MB");
-        var finalAddress = Marshal.AllocHGlobal(sizeof(ulong));
-        *(ulong*)finalAddress = ulong.MinValue;
+        var finalAddress = Marshal.AllocHGlobal(sizeof(decimal));
         var addressChain = GeneratePointerChain(finalAddress, offsets);
+        Console.WriteLine($"Memory used: {GC.GetTotalMemory(true) / 1024 / 1024} MB");
         
+        const decimal expectedValue = 0.987654321m;
+        *(decimal*)finalAddress = expectedValue;
         var chainedAddress = addressChain.Pointer.Chain(offsets);
         
         Assert.Multiple(() =>
         {
             Assert.That(chainedAddress, Is.EqualTo(finalAddress));
-            Assert.That(*(ulong*)chainedAddress, Is.EqualTo(ulong.MinValue));
+            Assert.That(*(decimal*)chainedAddress, Is.EqualTo(expectedValue));
         });
     }
 }
