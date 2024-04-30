@@ -6,13 +6,13 @@ namespace Testing;
 
 [TestFixture]
 [Parallelizable(ParallelScope.All)]
-public class MemoryAddressTests
+public unsafe class MemoryAddressTests
 {
     private const int Size = 1_000_000;
 
     private readonly ThreadLocal<MemoryAddress<byte>> _unmanagedMemory = new (() =>
     {
-        var memAddr = Marshal.AllocHGlobal(Size)
+        var memAddr = new nint(NativeMemory.Alloc(Size))
             .ToMemoryAddress<byte>(Size);
 
         var rand = new Random();

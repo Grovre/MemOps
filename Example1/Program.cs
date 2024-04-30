@@ -1,18 +1,21 @@
 ﻿using System.Runtime.InteropServices;
 using MemOps.Extensions;
 
-const int size = 1_000;
-var longs = Marshal
-    .AllocHGlobal(sizeof(long) * size)
-    .ToMemoryAddress<long>(size);
-GC.AddMemoryPressure(longs.GetSpan<byte>().Length);
-
-for (var i = 0; i < longs.Length; i++)
+unsafe
 {
-    longs.GetSpan()[i] = i;
-}
+    const int size = 1_000;
+    var pLongs = NativeMemory.Alloc(sizeof(long) * size);
+    var longs = new nint(pLongs).ToMemoryAddress<long>(size);
 
-for (var i = 0; i < longs.Length; i++)
-{
-    Console.WriteLine(longs.GetSpan()[i]);
+    for (var i = 0; i < longs.Length; i++)
+    {
+        longs.GetSpan()[i] = i;
+    }
+
+    for (var i = 0; i < longs.Length; i++)
+    {
+        Console.WriteLine(longs.GetSpan()[i]);
+    }
+
+    NativeMemory.Free(pLongs);
 }

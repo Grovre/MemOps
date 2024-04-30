@@ -7,13 +7,13 @@ namespace Testing;
 
 [TestFixture]
 [Parallelizable(ParallelScope.All)]
-public class PInvokeMemoryAddressTests
+public unsafe class PInvokeMemoryAddressTests
 {
     public const int Size = 1_000_000;
     private readonly ThreadLocal<PInvokeMemoryAddress<byte>> UnmanagedMemory = new(() =>
     {
         var hproc = Process.GetCurrentProcess().SafeHandle;
-        var memPtr = Marshal.AllocHGlobal(Size);
+        var memPtr = new nint(NativeMemory.Alloc(Size));
         var memAddr = new PInvokeMemoryAddress<byte>(
             memPtr, 
             Size, 

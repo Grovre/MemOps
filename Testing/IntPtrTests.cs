@@ -10,7 +10,7 @@ public class IntPtrTests
 {
     private unsafe MemoryAddress<nint> GeneratePointerChain(nint finalAddress, Span<nint> offsets)
     {
-        var p0AddressesChain = Marshal.AllocHGlobal(sizeof(nint) * offsets.Length);
+        var p0AddressesChain = new nint(NativeMemory.Alloc((nuint)(sizeof(nint) * offsets.Length)));
         var addressChain = new MemoryAddress<nint>(p0AddressesChain, offsets.Length);
         
         addressChain.GetSpan().Fill(p0AddressesChain);
@@ -27,7 +27,7 @@ public class IntPtrTests
     public unsafe void TestChain()
     {
         var offsets = new nint[150_000_038];
-        var finalAddress = Marshal.AllocHGlobal(sizeof(decimal));
+        var finalAddress = new nint(NativeMemory.Alloc(sizeof(decimal)));
         var addressChain = GeneratePointerChain(finalAddress, offsets);
         Console.WriteLine($"Memory used: {GC.GetTotalMemory(true) / 1024 / 1024} MB");
         
@@ -40,5 +40,8 @@ public class IntPtrTests
             Assert.That(chainedAddress, Is.EqualTo(finalAddress));
             Assert.That(*(decimal*)chainedAddress, Is.EqualTo(expectedValue));
         });
+        
+        NativeMemory.Free(finalAddress.ToPointer());
+        NativeMemory.Free(addressChain.Pointer.ToPointer());
     }
 }
