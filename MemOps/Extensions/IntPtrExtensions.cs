@@ -1,5 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 using MemOps.Addresses;
+using MemOps.Ops;
 
 namespace MemOps.Extensions;
 
@@ -22,6 +23,17 @@ public static class IntPtrExtensions
     {
         foreach (var offset in offsets)
             baseAddress = *(nint*)baseAddress + offset;
+
+        return baseAddress;
+    }
+    
+    public static unsafe nint PInvokeChain(this nint baseAddress, SafeHandle hProc, params nint[] offsets)
+    {
+        foreach (var offset in offsets)
+        {
+            MemoryOps.Read(hProc, (void*)baseAddress, out nint next);
+            baseAddress = next + offset;
+        }
 
         return baseAddress;
     }

@@ -1,4 +1,4 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Diagnostics;
 using System.Runtime.InteropServices;
 using MemOps.Addresses;
 using MemOps.Extensions;
@@ -40,7 +40,28 @@ public class IntPtrTests
         Assert.Multiple(() =>
         {
             Assert.That(chainedAddress, Is.EqualTo(finalAddress));
-            Assert.That(*(decimal*)chainedAddress, Is.EqualTo(expectedValue));
+            Assert.That(*(decimal*)finalAddress, Is.EqualTo(expectedValue)); // Just in case... Will never fail though
+            Assert.That(*(decimal*)chainedAddress, Is.EqualTo(*(decimal*)finalAddress));
+        });
+    }
+
+    [Test]
+    public unsafe void TestPInvokeChain()
+    {
+        var finalAddress = Marshal.AllocHGlobal(sizeof(decimal));
+        var addressChain = GeneratePointerChain(finalAddress, _offsets.Value!);
+        Console.WriteLine($"Memory used: {GC.GetTotalMemory(true) / 1024 / 1024} MB");
+        
+        const decimal expectedValue = 0.987654321m;
+        *(decimal*)finalAddress = expectedValue;
+        var hProc = Process.GetCurrentProcess().SafeHandle;
+        var chainedAddress = addressChain.Pointer.PInvokeChain(hProc, _offsets.Value!);
+        
+        Assert.Multiple(() =>
+        {
+            Assert.That(chainedAddress, Is.EqualTo(finalAddress));
+            Assert.That(*(decimal*)finalAddress, Is.EqualTo(expectedValue));
+            Assert.That(*(decimal*)chainedAddress, Is.EqualTo(*(decimal*)finalAddress));
         });
     }
 }
