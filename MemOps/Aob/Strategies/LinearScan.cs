@@ -1,6 +1,4 @@
-﻿using MemOps.Exceptions;
-
-namespace MemOps.Aob.Strategies;
+﻿namespace MemOps.Aob.Strategies;
 
 public class LinearScan : IScanStrategy
 {

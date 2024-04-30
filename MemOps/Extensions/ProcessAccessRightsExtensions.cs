@@ -5,6 +5,7 @@ namespace MemOps.Extensions;
 /// <summary>
 ///     A set of extensions for common uses of the access right flags
 /// </summary>
+// ReSharper disable once InconsistentNaming
 public static class ProcessAccessRightsExtensions
 {
     /// <summary>

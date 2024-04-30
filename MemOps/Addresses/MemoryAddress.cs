@@ -1,5 +1,4 @@
 ﻿using System.Buffers;
-using System.IO.MemoryMappedFiles;
 using System.Runtime.InteropServices;
 
 namespace MemOps.Addresses;
@@ -27,7 +26,6 @@ public unsafe class MemoryAddress<T> : MemoryManager<T>
     /// </summary>
     /// <param name="pointer">Pointer to the object(s)</param>
     /// <param name="length">Length in T of how many T objects exist at the address</param>
-    /// <param name="hasOwnershipOfMemory">Releases the memory if this is true when this instance is disposed</param>
     public MemoryAddress(IntPtr pointer, int length)
     {
         Pointer = pointer;

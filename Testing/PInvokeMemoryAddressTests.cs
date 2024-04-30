@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics;
 using System.Runtime.InteropServices;
-using Windows.Win32;
 using MemOps.Addresses;
 using MemOps.Enums;
 

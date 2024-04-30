@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 using MemOps.Enums;
 using MemOps.Ops;
 
@@ -26,7 +25,6 @@ public class PInvokeMemoryAddress<T> : MemoryAddress<T>
     /// </summary>
     /// <param name="ptr">Pointer to object(s)</param>
     /// <param name="length">Length of how many T objects exist at the address</param>
-    /// <param name="hasOwnership">Should memory be released when this instance is disposed?</param>
     /// <param name="handle">Handle to process</param>
     /// <param name="accessRights">Access rights needed</param>
     public PInvokeMemoryAddress(IntPtr ptr, int length, SafeHandle handle, ProcessAccessRights accessRights) : base(ptr, length)
@@ -53,7 +51,6 @@ public class PInvokeMemoryAddress<T> : MemoryAddress<T>
         MemoryOps.ReadMultiple(Handle, Pointer.ToPointer(), span);
     }
 
-    // TODO: Make in instead of ref
     /// <summary>
     /// Writes 1 T to the address
     /// </summary>

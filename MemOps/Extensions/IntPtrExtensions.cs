@@ -1,5 +1,4 @@
-﻿using System.Runtime.InteropServices;
-using MemOps.Addresses;
+﻿using MemOps.Addresses;
 
 namespace MemOps.Extensions;
 
@@ -10,7 +9,6 @@ public static class IntPtrExtensions
     /// </summary>
     /// <param name="ptr">Pointer to memory</param>
     /// <param name="length">Length of elements at pointer</param>
-    /// <param name="hasOwnership">Memory disposed of when MemoryAddress disposed of</param>
     /// <typeparam name="T">Unmanaged type of elements</typeparam>
     /// <returns>New MemoryAddress of provided pointer and length</returns>
     public static MemoryAddress<T> ToMemoryAddress<T>(this IntPtr ptr, int length) where T : unmanaged
