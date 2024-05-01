@@ -13,8 +13,8 @@ public class PointerChainTests
     
     private static unsafe MemoryAddress<nint> GeneratePointerChain(nint finalAddress, Span<nint> offsets)
     {
-        var p0AddressesChain = Marshal.AllocHGlobal(sizeof(nint) * offsets.Length);
-        var addressChain = new MemoryAddress<nint>(p0AddressesChain, offsets.Length, true);
+        var p0AddressesChain = new nint(NativeMemory.Alloc((nuint)(sizeof(nint) * offsets.Length)));
+        var addressChain = new MemoryAddress<nint>(p0AddressesChain, offsets.Length);
         
         addressChain.GetSpan().Fill(p0AddressesChain);
         addressChain.GetSpan()[^1] = finalAddress;
@@ -28,7 +28,7 @@ public class PointerChainTests
     
     private unsafe (MemoryAddress<IntPtr> PointerChainP0, IntPtr[] Offsets, IntPtr FinalAddress) PrepareTest<T>(in T expectedValue) where T : unmanaged
     {
-        var finalAddress = Marshal.AllocHGlobal(sizeof(T));
+        var finalAddress = new nint(NativeMemory.Alloc((nuint)sizeof(T)));
         *(T*)finalAddress = expectedValue;
         var ptrChain = GeneratePointerChain(finalAddress, _offsets.Value!);
         Console.WriteLine($"Memory used: {GC.GetTotalMemory(true) / 1024 / 1024:N2} MB");
@@ -49,6 +49,9 @@ public class PointerChainTests
             Assert.That(*(decimal*)testPrep.FinalAddress, Is.EqualTo(expectedValue)); // Just in case... Will never fail though
             Assert.That(*(decimal*)chainedAddress, Is.EqualTo(*(decimal*)testPrep.FinalAddress));
         });
+        
+        NativeMemory.Free(testPrep.PointerChainP0.Pointer.ToPointer());
+        NativeMemory.Free(testPrep.FinalAddress.ToPointer());
     }
 
     [Test]
@@ -65,5 +68,8 @@ public class PointerChainTests
             Assert.That(*(decimal*)testPrep.FinalAddress, Is.EqualTo(expectedValue));
             Assert.That(*(decimal*)chainedAddress, Is.EqualTo(*(decimal*)testPrep.FinalAddress));
         });
+        
+        NativeMemory.Free(testPrep.PointerChainP0.Pointer.ToPointer());
+        NativeMemory.Free(testPrep.FinalAddress.ToPointer());
     }
 }

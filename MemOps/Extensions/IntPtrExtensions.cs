@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices;
 using MemOps.Addresses;
 using MemOps.Ops;
 
