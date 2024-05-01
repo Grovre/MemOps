@@ -7,12 +7,12 @@ namespace Testing;
 [Parallelizable(ParallelScope.All)]
 public class AobTests
 {
-    ThreadLocal<byte[]> _gigabyteData = new(() => new byte[1024 * 1024 * 1024]);
+    private readonly ThreadLocal<byte[]> _gigabyteData = new(() => new byte[1024 * 1024 * 1024]);
     private const int PatternLength = 19;
     
     private record ScanTest(byte[] Data, byte[] Pattern, byte[] Mask, nint ExpectedResult);
 
-    private ScanTest prepareScanTest()
+    private ScanTest PrepareScanTest()
     {
         var random = new Random();
         
@@ -35,7 +35,7 @@ public class AobTests
     [Test]
     public void TestLinearScan()
     {
-        var test = prepareScanTest();
+        var test = PrepareScanTest();
         
         var scanner = new AobScanner(test.Data, new LinearScan());
         nint result = -1;
@@ -50,7 +50,7 @@ public class AobTests
         Assert.Throws<NotImplementedException>(
             () => new AobScanner(Memory<byte>.Empty, new VectorScan()));
         return;
-        var test = prepareScanTest();
+        var test = PrepareScanTest();
         
         var scanner = new AobScanner(test.Data, new VectorScan());
         nint result = -1;

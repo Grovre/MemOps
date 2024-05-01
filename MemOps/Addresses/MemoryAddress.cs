@@ -1,12 +1,12 @@
 ﻿using System.Buffers;
-using System.IO.MemoryMappedFiles;
 using System.Runtime.InteropServices;
 
 namespace MemOps.Addresses;
 
 /// <summary>
 /// A class used for keeping track of unmanaged objects
-/// in memory in an object-oriented way
+/// in memory in an object-oriented way. Unmanaged memory
+/// should be disposed of manually when no longer needed.
 /// </summary>
 /// <typeparam name="T">Type pointed to</typeparam>
 public unsafe class MemoryAddress<T> : MemoryManager<T>
@@ -20,23 +20,16 @@ public unsafe class MemoryAddress<T> : MemoryManager<T>
     /// How many T objects are at the address
     /// </summary>
     public readonly int Length;
-    /// <summary>
-    /// Determines if the memory should be released when
-    /// the MemoryAddress object is disposed of.
-    /// </summary>
-    public readonly bool HasOwnership;
 
     /// <summary>
     /// Allargs constructor
     /// </summary>
     /// <param name="pointer">Pointer to the object(s)</param>
     /// <param name="length">Length in T of how many T objects exist at the address</param>
-    /// <param name="hasOwnershipOfMemory">Releases the memory if this is true when this instance is disposed</param>
-    public MemoryAddress(IntPtr pointer, int length, bool hasOwnershipOfMemory)
+    public MemoryAddress(IntPtr pointer, int length)
     {
         Pointer = pointer;
         Length = length;
-        HasOwnership = hasOwnershipOfMemory;
     }
     
     /// <summary>
@@ -63,15 +56,12 @@ public unsafe class MemoryAddress<T> : MemoryManager<T>
     }
     
     /// <summary>
-    /// Disposes of the memory if this object has ownersihp
+    /// Does nothing. Unmanaged memory should be disposed of manually
+    /// to prevent unwanted side effects.
     /// </summary>
     /// <param name="disposing"></param>
     protected override void Dispose(bool disposing)
     {
-        if (HasOwnership)
-        {
-            Marshal.FreeHGlobal(Pointer);
-        }
     }
 
     /// <summary>

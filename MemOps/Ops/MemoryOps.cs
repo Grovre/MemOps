@@ -145,7 +145,7 @@ public static unsafe class MemoryOps
     /// </summary>
     /// <param name="handle">Handle with access to write with</param>
     /// <param name="baseAddress">Address in memory to write</param>
-    /// <param name="span">Byte source</param>
+    /// <param name="bytes">Byte source</param>
     /// <param name="printOnWrite">Whether to print a message to the console immediately after writing</param>
     /// <exception cref="MemoryException">Thrown if the WriteProcessMemory function returned nonzero (failed)</exception>
     /// <returns>The amount of bytes that were written</returns>
