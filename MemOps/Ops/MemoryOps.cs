@@ -69,8 +69,8 @@ public static unsafe class MemoryOps
 
     /// <summary>
     ///     Provides a way to interact with the lower ReadProcessMemory function from the
-    ///     Win32 API. This will read contiguously the same amount of values as there are
-    ///     indices in the given span, to the given span starting from the base address.
+    ///     Win32 API. This will read contiguously the same amount of elements as there are
+    ///     in the given span, to the given span starting from the base address.
     /// </summary>
     /// <param name="handle">Handle to read memory with</param>
     /// <param name="baseAddress">Address to read into the buffer</param>
@@ -83,58 +83,6 @@ public static unsafe class MemoryOps
     {
         var byteSpan = MemoryMarshal.Cast<T, byte>(bufferSpan);
         ReadBytes(handle, baseAddress, byteSpan, printOnRead);
-    }
-
-    /// <summary>
-    ///     Continuously reads an address until stopped. This should be started in a
-    ///     separate thread or task.
-    ///     This function accepts a ReaderWriterLockSlim in order to synchronize reads from writes.
-    ///     It uses an internal buffer of T to read into, only locking to copy the internal buffer to
-    ///     the given reference buffer to achieve the shortest write locking time possible.
-    ///     Another important parameter is for a cancellation token to stop the loop. If one is not
-    ///     given, the loop will go on forever until killed. The token is always checked before
-    ///     the thread goes to sleep for the given duration. If the token is called while asleep,
-    ///     one last read will be done.
-    /// </summary>
-    /// <param name="handle">Handle to read memory with</param>
-    /// <param name="baseAddress">Address to read memory at</param>
-    /// <param name="bufferStruct">Buffer for reading into</param>
-    /// <param name="delayBetweenReads">Time between cycles</param>
-    /// <param name="rwLock">Optional slim lock to allow multiple reads but only a single write at a time</param>
-    /// <param name="cancelToken">Token to stop the reading cycle</param>
-    /// <param name="printOnRead">Whether or not to print a message to the console immediately after reading</param>
-    /// <typeparam name="T">Struct type the memory is interpreted as</typeparam>
-    /// <exception cref="ArgumentOutOfRangeException">Thrown if the cycle interval is too short (le 0)</exception>
-    /// <exception cref="ArgumentException">Thrown if the lock took more than 10 seconds to enter</exception>
-    public static void ReadCycle<T>(
-        SafeHandle handle,
-        void* baseAddress,
-        ref T bufferStruct,
-        TimeSpan delayBetweenReads,
-        ReaderWriterLockSlim? rwLock = null,
-        CancellationToken? cancelToken = null,
-        bool printOnRead = false)
-        where T : unmanaged
-    {
-        if (delayBetweenReads <= TimeSpan.Zero)
-            throw new ArgumentOutOfRangeException(
-                nameof(delayBetweenReads),
-                "Delay must be above 0. Little to no delay will be unpredictable.");
-
-        while (!cancelToken?.IsCancellationRequested ?? true)
-        {
-            Thread.Sleep(delayBetweenReads); // Use Task.Delay.Wait instead?
-
-            // Just in case
-            // https://learn.microsoft.com/en-us/windows/win32/debug/system-error-codes--0-499-
-            Read(handle, baseAddress, out T internalBuffer, printOnRead);
-
-            var entered = rwLock?.TryEnterWriteLock(TimeSpan.FromSeconds(10));
-            if (entered.HasValue && !entered.Value) // If no value then there was no lock
-                throw new ArgumentException("Timed out after 10 seconds trying to enter write lock");
-            bufferStruct = internalBuffer; // Do not inline Read, make lock as fast as possible
-            rwLock?.ExitWriteLock();
-        }
     }
 
     /// <summary>
