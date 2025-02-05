@@ -25,10 +25,9 @@ public static unsafe class MemoryOps
     /// <param name="handle">Handle with access to read with</param>
     /// <param name="baseAddress">Address in memory to read</param>
     /// <param name="span">Span to write the read bytes to</param>
-    /// <param name="printOnRead">Whether to print a message to the console immediately after reading</param>
     /// <exception cref="MemoryException">Thrown if the ReadProcessMemory function returned nonzero (failed)</exception>
     /// <returns>The amount of bytes that were read</returns>
-    public static nuint ReadBytes(SafeHandle handle, void* baseAddress, Span<byte> span, bool printOnRead = false)
+    public static nuint ReadBytes(SafeHandle handle, void* baseAddress, Span<byte> span)
     {
         handle.AssertHandleIsValidDebug();
         var sz = (nuint)span.Length;
@@ -44,9 +43,6 @@ public static unsafe class MemoryOps
             }
         }
 
-        if (printOnRead)
-            Console.WriteLine($"Read {byteReadCount} bytes at 0x{(nint)baseAddress:X}");
-
         return byteReadCount;
     }
 
@@ -57,14 +53,13 @@ public static unsafe class MemoryOps
     /// <param name="handle">Handle to read memory with</param>
     /// <param name="baseAddress">Address to read into the buffer</param>
     /// <param name="bufferStruct">Buffer for reading into</param>
-    /// <param name="printOnRead">Whether or not to print immediately after reading from memory</param>
     /// <typeparam name="T">The struct type to interpret the memory as</typeparam>
-    public static void Read<T>(SafeHandle handle, void* baseAddress, out T bufferStruct, bool printOnRead = false)
+    public static void Read<T>(SafeHandle handle, void* baseAddress, out T bufferStruct)
         where T : unmanaged
     {
         bufferStruct = default;
         var bufferSpan = MemoryMarshal.CreateSpan(ref bufferStruct, 1);
-        ReadMultiple(handle, baseAddress, bufferSpan, printOnRead);
+        ReadMultiple(handle, baseAddress, bufferSpan);
     }
 
     /// <summary>
@@ -75,14 +70,12 @@ public static unsafe class MemoryOps
     /// <param name="handle">Handle to read memory with</param>
     /// <param name="baseAddress">Address to read into the buffer</param>
     /// <param name="bufferSpan">Buffer for reading into</param>
-    /// <param name="printOnRead">Whether or not to print immediately after reading from memory</param>
     /// <typeparam name="T">The struct type to interpret the memory as</typeparam>
-    public static void ReadMultiple<T>(SafeHandle handle, void* baseAddress, Span<T> bufferSpan,
-        bool printOnRead = false)
+    public static void ReadMultiple<T>(SafeHandle handle, void* baseAddress, Span<T> bufferSpan)
         where T : unmanaged
     {
         var byteSpan = MemoryMarshal.Cast<T, byte>(bufferSpan);
-        ReadBytes(handle, baseAddress, byteSpan, printOnRead);
+        ReadBytes(handle, baseAddress, byteSpan);
     }
 
     /// <summary>
@@ -94,11 +87,9 @@ public static unsafe class MemoryOps
     /// <param name="handle">Handle with access to write with</param>
     /// <param name="baseAddress">Address in memory to write</param>
     /// <param name="bytes">Byte source</param>
-    /// <param name="printOnWrite">Whether to print a message to the console immediately after writing</param>
     /// <exception cref="MemoryException">Thrown if the WriteProcessMemory function returned nonzero (failed)</exception>
     /// <returns>The amount of bytes that were written</returns>
-    public static nuint WriteBytes(SafeHandle handle, void* baseAddress, ReadOnlySpan<byte> bytes,
-        bool printOnWrite = false)
+    public static nuint WriteBytes(SafeHandle handle, void* baseAddress, ReadOnlySpan<byte> bytes)
     {
         handle.AssertHandleIsValidDebug();
         var sz = (nuint)bytes.Length;
@@ -114,9 +105,6 @@ public static unsafe class MemoryOps
             }
         }
 
-        if (printOnWrite)
-            Console.WriteLine($"Wrote {byteWriteCount} bytes at 0x{(nint)baseAddress:X}");
-
         return byteWriteCount;
     }
 
@@ -127,13 +115,12 @@ public static unsafe class MemoryOps
     /// <param name="handle">Handle to write memory with</param>
     /// <param name="baseAddress">Address to write to</param>
     /// <param name="bufferStruct">Data source</param>
-    /// <param name="printOnWrite">Whether or not to print immediately after writing from memory</param>
     /// <typeparam name="T">The struct type to interpret the memory as</typeparam>
-    public static void Write<T>(SafeHandle handle, void* baseAddress, ref T bufferStruct, bool printOnWrite = false)
+    public static void Write<T>(SafeHandle handle, void* baseAddress, ref T bufferStruct)
         where T : unmanaged
     {
         var span = MemoryMarshal.CreateReadOnlySpan(ref bufferStruct, 1);
-        WriteMultiple(handle, baseAddress, span, printOnWrite);
+        WriteMultiple(handle, baseAddress, span);
     }
 
     /// <summary>
@@ -144,13 +131,11 @@ public static unsafe class MemoryOps
     /// <param name="handle">Handle to write memory with</param>
     /// <param name="baseAddress">Address to write from buffer source</param>
     /// <param name="bufferSpan">Writing buffer source</param>
-    /// <param name="printOnWrite">Whether or not to print immediately after writing from memory</param>
     /// <typeparam name="T">The struct type to interpret the memory as</typeparam>
-    public static void WriteMultiple<T>(SafeHandle handle, void* baseAddress, ReadOnlySpan<T> bufferSpan,
-        bool printOnWrite = false) where T : unmanaged
+    public static void WriteMultiple<T>(SafeHandle handle, void* baseAddress, ReadOnlySpan<T> bufferSpan) where T : unmanaged
     {
         var byteSpan = MemoryMarshal.AsBytes(bufferSpan);
-        WriteBytes(handle, baseAddress, byteSpan, printOnWrite);
+        WriteBytes(handle, baseAddress, byteSpan);
     }
 
     /// <summary>
@@ -180,7 +165,7 @@ public static unsafe class MemoryOps
     }
 
     /// <summary>
-    ///     Asserts a handle is not valid according
+    ///     Asserts a handle is valid according
     ///     to the <code>IsHandleValid</code> function.
     ///     Only runs when the DEBUG constant is defined.
     /// </summary>
