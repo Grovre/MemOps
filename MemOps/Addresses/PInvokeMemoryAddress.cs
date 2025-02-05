@@ -25,7 +25,7 @@ public class PInvokeMemoryAddress<T> : MemoryAddress<T>
     }
 
     /// <summary>
-    /// Reads the memory address into a buffer
+    /// Reads the T span at the address into a buffer
     /// </summary>
     /// <param name="buffer">Buffer to read into</param>
     public override unsafe void Read(Span<T> buffer)
@@ -34,7 +34,7 @@ public class PInvokeMemoryAddress<T> : MemoryAddress<T>
     }
 
     /// <summary>
-    /// Writes the buffer to the memory address
+    /// Writes the buffer to the T span at the memory address
     /// </summary>
     /// <param name="buffer">Buffer to read from</param>
     public override unsafe void Write(ReadOnlySpan<T> buffer)

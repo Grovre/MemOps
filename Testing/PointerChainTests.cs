@@ -16,8 +16,8 @@ public class PointerChainTests
         var p0AddressesChain = new nint(NativeMemory.Alloc((nuint)(sizeof(nint) * offsets.Length)));
         var addressChain = new MemoryAddress<nint>(p0AddressesChain, offsets.Length);
         
-        addressChain.GetSpan().Fill(p0AddressesChain);
-        addressChain.GetSpan()[^1] = finalAddress;
+        addressChain.AsSpan().Fill(p0AddressesChain);
+        addressChain.AsSpan()[^1] = finalAddress;
 
         for (var i = 0; i < offsets.Length - 1; i++)
             offsets[i] = sizeof(nint) * (i + 1);

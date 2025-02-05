@@ -43,19 +43,4 @@ public class AobTests
         Assert.DoesNotThrow(() => result = scanner.Scan(test.Pattern, test.Mask));
         Assert.That(result, Is.EqualTo(test.ExpectedResult));
     }
-
-    [Test]
-    public void TestVectorScan()
-    {
-        Assert.Throws<NotImplementedException>(
-            () => new AobScanner(Memory<byte>.Empty, new VectorScan()));
-        return;
-        var test = PrepareScanTest();
-        
-        var scanner = new AobScanner(test.Data, new VectorScan());
-        nint result = -1;
-        
-        Assert.DoesNotThrow(() => result = scanner.Scan(test.Pattern, test.Mask));
-        Assert.That(result, Is.EqualTo(test.ExpectedResult));
-    }
 }

@@ -33,7 +33,7 @@ public unsafe class MemoryAddress<T>
     }
 
     /// <summary>
-    /// Reads a T span from the address
+    /// Reads the T span at the address into a buffer
     /// </summary>
     /// <param name="buffer">Buffer to write to</param>
     public virtual void Read(Span<T> buffer)
@@ -42,7 +42,7 @@ public unsafe class MemoryAddress<T>
     }
 
     /// <summary>
-    /// Writes a T span to the address
+    /// Writes the buffer to the T span at the memory address
     /// </summary>
     /// <param name="buffer">Buffer to read from</param>
     public virtual void Write(ReadOnlySpan<T> buffer)

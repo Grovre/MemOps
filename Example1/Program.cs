@@ -9,12 +9,12 @@ unsafe
 
     for (var i = 0; i < longs.Length; i++)
     {
-        longs.GetSpan()[i] = i;
+        longs.AsSpan()[i] = i;
     }
 
     for (var i = 0; i < longs.Length; i++)
     {
-        Console.WriteLine(longs.GetSpan()[i]);
+        Console.WriteLine(longs.AsSpan()[i]);
     }
 
     NativeMemory.Free(pLongs);
