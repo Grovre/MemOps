@@ -168,7 +168,7 @@ public static unsafe class MemoryOps
     }
 
     /// <summary>
-    ///     Asserts a handle is not valid according
+    ///     Asserts a handle is valid according
     ///     to the <code>IsHandleValid</code> function.
     /// </summary>
     /// <param name="handle">The handle to check</param>

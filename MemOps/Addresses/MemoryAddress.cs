@@ -9,7 +9,7 @@ namespace MemOps.Addresses;
 /// should be disposed of manually when no longer needed.
 /// </summary>
 /// <typeparam name="T">Type pointed to</typeparam>
-public unsafe class MemoryAddress<T> : MemoryManager<T>
+public unsafe class MemoryAddress<T>
     where T : unmanaged
 {
     /// <summary>
@@ -31,59 +31,31 @@ public unsafe class MemoryAddress<T> : MemoryManager<T>
         Pointer = pointer;
         Length = length;
     }
-    
+
     /// <summary>
-    /// Reads a single T object at the address
+    /// Reads a T span from the address
     /// </summary>
-    /// <returns></returns>
-    public T Read()
+    /// <param name="buffer">Buffer to write to</param>
+    public virtual void Read(Span<T> buffer)
     {
-        return *(T*)Pointer;
+        AsSpan().CopyTo(buffer);
     }
 
     /// <summary>
-    /// Used to retrieve all T objects that exist at the address
+    /// Writes a T span to the address
     /// </summary>
-    /// <returns>A span covering all T objects from the address and length</returns>
-    public override Span<T> GetSpan()
+    /// <param name="buffer">Buffer to read from</param>
+    public virtual void Write(ReadOnlySpan<T> buffer)
+    {
+        buffer.CopyTo(AsSpan());
+    }
+
+    /// <summary>
+    /// Creates a T span of the given length over the address
+    /// </summary>
+    /// <returns>T span with the given length</returns>
+    public virtual Span<T> AsSpan()
     {
         return new Span<T>(Pointer.ToPointer(), Length);
     }
-
-    public Span<TTo> GetSpan<TTo>() where TTo : unmanaged
-    {
-        return MemoryMarshal.Cast<T, TTo>(GetSpan());
-    }
-    
-    /// <summary>
-    /// Does nothing. Unmanaged memory should be disposed of manually
-    /// to prevent unwanted side effects.
-    /// </summary>
-    /// <param name="disposing"></param>
-    protected override void Dispose(bool disposing)
-    {
-    }
-
-    /// <summary>
-    /// Not used
-    /// </summary>
-    /// <param name="elementIndex"></param>
-    /// <returns></returns>
-    /// <exception cref="NotImplementedException"></exception>
-    public override MemoryHandle Pin(int elementIndex = 0)
-    {
-        throw new NotImplementedException();
-    }
-
-    /// <summary>
-    /// Not used
-    /// </summary>
-    /// <exception cref="NotImplementedException"></exception>
-    public override void Unpin()
-    {
-        throw new NotImplementedException();
-    }
-
-    public static implicit operator Span<T>(MemoryAddress<T> memAddr) => memAddr.GetSpan();
-    public static implicit operator ReadOnlySpan<T>(MemoryAddress<T> memAddr) => memAddr.GetSpan();
 }

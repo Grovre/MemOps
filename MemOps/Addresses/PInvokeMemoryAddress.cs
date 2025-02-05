@@ -11,61 +11,45 @@ namespace MemOps.Addresses;
 public class PInvokeMemoryAddress<T> : MemoryAddress<T>
     where T : unmanaged
 {
-    /// <summary>
-    /// Safe handle used to PInvoke Read/WriteProcessMemory
-    /// </summary>
-    public SafeHandle Handle { get; init; }
-    /// <summary>
-    /// Access rights used to read/write
-    /// </summary>
-    public ProcessAccessRights AccessRights { get; set; }
+    private SafeHandle Handle { get; }
 
     /// <summary>
-    /// Initializes all necessary members to use PInvoke calls for reading/writing
+    /// Creates a new PInvokeMemoryAddress for use with PInvoke
     /// </summary>
-    /// <param name="ptr">Pointer to object(s)</param>
-    /// <param name="length">Length of how many T objects exist at the address</param>
-    /// <param name="handle">Handle to process</param>
-    /// <param name="accessRights">Access rights needed</param>
-    public PInvokeMemoryAddress(IntPtr ptr, int length, SafeHandle handle, ProcessAccessRights accessRights) : base(ptr, length)
+    /// <param name="hProc">A SafeHandle to another process</param>
+    /// <param name="pointer">Address of memory</param>
+    /// <param name="length">Length of T elements at the address</param>
+    public PInvokeMemoryAddress(SafeHandle hProc, nint pointer, int length) : base(pointer, length)
     {
-        Handle = handle;
-        AccessRights = accessRights;
+        Handle = hProc;
     }
 
     /// <summary>
-    /// Reads 1 T at the address
+    /// Reads the memory address into a buffer
     /// </summary>
-    /// <param name="v">The ref to read to</param>
-    public unsafe void Read(out T v)
+    /// <param name="buffer">Buffer to read into</param>
+    public override unsafe void Read(Span<T> buffer)
     {
-        MemoryOps.Read(Handle, Pointer.ToPointer(), out v);
+        MemoryOps.ReadMultiple(Handle, Pointer.ToPointer(), buffer);
     }
 
     /// <summary>
-    /// Reads an amount of T depending on the length of the span
+    /// Writes the buffer to the memory address
     /// </summary>
-    /// <param name="span">Buffer to store read values</param>
-    public unsafe void ReadMultiple(Span<T> span)
+    /// <param name="buffer">Buffer to read from</param>
+    public override unsafe void Write(ReadOnlySpan<T> buffer)
     {
-        MemoryOps.ReadMultiple(Handle, Pointer.ToPointer(), span);
+        MemoryOps.WriteMultiple(Handle, Pointer.ToPointer(), buffer);
     }
 
     /// <summary>
-    /// Writes 1 T to the address
+    /// Cannot get a span over memory in another process.
     /// </summary>
-    /// <param name="v">T object to write</param>
-    public unsafe void Write(ref T v)
+    /// <returns>Will not return</returns>
+    /// <exception cref="NotSupportedException"></exception>
+    public override Span<T> AsSpan()
     {
-        MemoryOps.Write(Handle, Pointer.ToPointer(), ref v);
-    }
-    
-    /// <summary>
-    /// Writes an amount of T depending on the length of the span
-    /// </summary>
-    /// <param name="span">Source buffer</param>
-    public unsafe void WriteMultiple(ReadOnlySpan<T> span)
-    {
-        MemoryOps.WriteMultiple(Handle, Pointer.ToPointer(), span);
+        throw new NotSupportedException(
+            "Cannot get a span over memory in another process.");
     }
 }
