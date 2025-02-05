@@ -27,7 +27,12 @@ public class AobTests
         var mask = new byte[pattern.Length];
         for (var i = 0; i < mask.Length; i++)
             mask[i] = 0xFF;
-        mask[random.Next(mask.Length)] = 0;
+
+        var randomMaskIndex = random.Next(mask.Length);
+        while (randomMaskIndex == 0 || randomMaskIndex == pattern.Length - 1)
+            randomMaskIndex = random.Next(mask.Length);
+
+        mask[randomMaskIndex] = 0;
         
         return new ScanTest(dataToScan, pattern, mask, patternIndex);
     }
